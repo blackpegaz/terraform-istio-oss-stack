@@ -5,7 +5,7 @@
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.5.5 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | ~> 2.12.1 |
-| <a name="requirement_kubectl"></a> [kubectl](#requirement\_kubectl) | 2.0.3 |
+| <a name="requirement_kubectl"></a> [kubectl](#requirement\_kubectl) | >= 2.0.4 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 2.24.0 |
 
 ## Providers
@@ -31,7 +31,7 @@ No modules.
 | [helm_release.istiod](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.jaeger](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.kiali_operator](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
-| [kubectl_manifest.base_crds](https://registry.terraform.io/providers/alekc/kubectl/2.0.3/docs/resources/manifest) | resource |
+| [kubectl_manifest.base_crds](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
 | [kubernetes_manifest.istio_ingressgateway_backendconfig](https://registry.terraform.io/providers/hashicorp/kubernetes/2.24.0/docs/resources/manifest) | resource |
 | [kubernetes_namespace_v1.cert_manager_namespace](https://registry.terraform.io/providers/hashicorp/kubernetes/2.24.0/docs/resources/namespace_v1) | resource |
 | [kubernetes_namespace_v1.istio_base_namespace](https://registry.terraform.io/providers/hashicorp/kubernetes/2.24.0/docs/resources/namespace_v1) | resource |
