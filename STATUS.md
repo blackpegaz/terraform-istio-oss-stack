@@ -3,16 +3,21 @@
 ## TO-DO 
 - [ ] Manage secrets/certificats
 - [ ] Simplify module with layers
+- [ ] Manage Ingress
 - [ ] Manage Gateway API
 - [ ] Manage "addons" exposition
 - [ ] Manage "addons" authentication
 - [ ] Manage servicemonitor
 - [ ] Manage CRDs
 - [ ] Add examples
-- [ ] Add instructions for requirements/extras.
 
 ## TO-THINK
-- [ ] Distroless images
-- [ ] Sampling rate
+- Distroless images
+- Sampling rate
+- Add instructions for requirements/extras (firewall-rules + prometheus + grafana)
+- (kiali) Components status
+- (istio) meshconfig discoveryselectors
+- (terraform) timeouts, outputs, waiting for deletetion
+
 
 ## ISSUES
