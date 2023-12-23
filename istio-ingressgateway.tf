@@ -3,8 +3,7 @@ locals {
 }
 
 resource "kubernetes_namespace_v1" "istio_ingressgateway_namespace" {
-  # count = local.istio.enabled && var.istio_ingressgateway_enabled && var.istio_ingressgateway_create_namespace ? 1 : 0 # FIXME Normal behaviour
-  count = local.istio.enabled && var.istio_ingressgateway_create_namespace ? 1 : 0
+  count = local.istio.enabled && var.istio_ingressgateway_enabled && var.istio_ingressgateway_create_namespace ? 1 : 0
 
   lifecycle {
     ignore_changes  = [metadata]
