@@ -36,7 +36,7 @@ data "helm_template" "base_crds" {
 }
 
 resource "kubectl_manifest" "base_crds" {
-  for_each  = local.crds_dict
+  for_each  = { for k, v in local.crds_dict : k => v if var.istio_enabled }
   yaml_body = each.value
 
   lifecycle {
