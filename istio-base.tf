@@ -1,8 +1,6 @@
 locals {
-  # TODO Review naming
-  crds_split_doc  = split("---", data.helm_template.base_crds.manifest)
-  crds_valid_yaml = [for doc in local.crds_split_doc : doc if try(yamldecode(doc).metadata.name, "") != ""]
-  crds_dict       = { for doc in toset(local.crds_valid_yaml) : yamldecode(doc).metadata.name => doc }
+  url_base_crd_crdallgen = "https://raw.githubusercontent.com/istio/istio/${var.istio_base_crds_version}/manifests/charts/base/crds/crd-all.gen.yaml"
+  url_base_crd_operator  = "https://raw.githubusercontent.com/istio/istio/${var.istio_base_crds_version}/manifests/charts/base/crds/crd-operator.yaml"
 }
 
 resource "kubernetes_namespace_v1" "istio_base_namespace" {
@@ -17,26 +15,47 @@ resource "kubernetes_namespace_v1" "istio_base_namespace" {
   }
 }
 
-data "helm_template" "base_crds" {
-  name       = "istio-base"
-  repository = local.istio.helm_repo
-  chart      = "base"
-  version    = var.istio_base_crds_version
-  namespace  = var.istio_base_namespace
+data "http" "base_crd_crdallgen" {
+  url = local.url_base_crd_crdallgen
 
-  set {
-    name  = "base.enableCRDTemplates"
-    value = "true"
+  lifecycle {
+    postcondition {
+      condition     = contains([200, 201, 204], self.status_code)
+      error_message = "Status code invalid"
+    }
   }
-
-  show_only = [
-    "templates/crds.yaml",
-  ]
-
 }
 
-resource "kubectl_manifest" "base_crds" {
-  for_each  = { for k, v in local.crds_dict : k => v if var.istio_enabled }
+data "kubectl_file_documents" "base_crd_crdallgen" {
+  content = data.http.base_crd_crdallgen.response_body
+}
+
+resource "kubectl_manifest" "base_crd_crdallgen" {
+  for_each  = { for k, v in data.kubectl_file_documents.base_crd_crdallgen.manifests : k => v if var.istio_enabled }
+  yaml_body = each.value
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+data "http" "base_crd_operator" {
+  url = local.url_base_crd_operator
+
+  lifecycle {
+    postcondition {
+      condition     = contains([200, 201, 204], self.status_code)
+      error_message = "Status code invalid"
+    }
+  }
+}
+
+data "kubectl_file_documents" "base_crd_operator" {
+  content = data.http.base_crd_operator.response_body
+}
+
+resource "kubectl_manifest" "base_crd_operator" {
+  for_each  = { for k, v in data.kubectl_file_documents.base_crd_operator.manifests : k => v if var.istio_enabled }
   yaml_body = each.value
 
   lifecycle {
@@ -67,6 +86,7 @@ resource "helm_release" "base" {
 
   depends_on = [
     kubernetes_namespace_v1.istio_base_namespace,
-    kubectl_manifest.base_crds
+    kubectl_manifest.base_crd_crdallgen,
+    kubectl_manifest.base_crd_operator
   ]
 }
