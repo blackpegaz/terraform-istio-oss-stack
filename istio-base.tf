@@ -73,7 +73,7 @@ resource "helm_release" "base" {
   name             = "istio-base"
   repository       = local.istio.helm_repo
   chart            = "base"
-  version          = var.istio_base_version # TODO Implications ?
+  version          = var.istio_base_version
   create_namespace = false
   namespace        = var.istio_base_namespace
   skip_crds        = true
