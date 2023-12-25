@@ -31,8 +31,10 @@ data "kubectl_file_documents" "base_crd_crdallgen" {
 }
 
 resource "kubectl_manifest" "base_crd_crdallgen" {
-  for_each  = { for k, v in data.kubectl_file_documents.base_crd_crdallgen.manifests : k => v if var.istio_enabled }
-  yaml_body = each.value
+  for_each          = { for k, v in data.kubectl_file_documents.base_crd_crdallgen.manifests : k => v if var.istio_enabled }
+  yaml_body         = each.value
+  wait              = true
+  server_side_apply = true
 
   lifecycle {
     prevent_destroy = true
@@ -55,8 +57,10 @@ data "kubectl_file_documents" "base_crd_operator" {
 }
 
 resource "kubectl_manifest" "base_crd_operator" {
-  for_each  = { for k, v in data.kubectl_file_documents.base_crd_operator.manifests : k => v if var.istio_enabled }
-  yaml_body = each.value
+  for_each          = { for k, v in data.kubectl_file_documents.base_crd_operator.manifests : k => v if var.istio_enabled }
+  yaml_body         = each.value
+  wait              = true
+  server_side_apply = true
 
   lifecycle {
     prevent_destroy = true
