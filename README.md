@@ -8,8 +8,6 @@
 | <a name="requirement_http"></a> [http](#requirement\_http) | 3.4.1 |
 | <a name="requirement_kubectl"></a> [kubectl](#requirement\_kubectl) | >= 2.0.4 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 2.24.0 |
-| <a name="requirement_local"></a> [local](#requirement\_local) | 2.4.1 |
-| <a name="requirement_null"></a> [null](#requirement\_null) | 3.2.2 |
 
 ## Providers
 
