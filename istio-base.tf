@@ -1,22 +1,28 @@
 locals {
-  url_base_crd_crdallgen = "https://raw.githubusercontent.com/istio/istio/${var.istio_base_crds_version}/manifests/charts/base/crds/crd-all.gen.yaml"
-  url_base_crd_operator  = "https://raw.githubusercontent.com/istio/istio/${var.istio_base_crds_version}/manifests/charts/base/crds/crd-operator.yaml"
+  base_url_crd_crdallgen = "https://raw.githubusercontent.com/istio/istio/${var.istio_base_crds_version}/manifests/charts/base/crds/crd-all.gen.yaml"
+  base_url_crd_operator  = "https://raw.githubusercontent.com/istio/istio/${var.istio_base_crds_version}/manifests/charts/base/crds/crd-operator.yaml"
+
+  base_default_helm_values = templatefile("${path.module}/templates/istio-mesh/base-default-helm-values.yaml.tftpl", {
+    defaultrevision = var.istio_stable_revision,
+    platform        = var.istio_platform
+  })
 }
 
 resource "kubernetes_namespace_v1" "istio_base_namespace" {
   count = var.istio_enabled && var.istio_base_enabled ? 1 : 0
 
-  lifecycle {
-    ignore_changes = [metadata]
-  }
-
   metadata {
     name = var.istio_base_namespace
+  }
+
+  lifecycle {
+    ignore_changes  = [metadata]
+    prevent_destroy = false
   }
 }
 
 data "http" "base_crd_crdallgen" {
-  url = local.url_base_crd_crdallgen
+  url = local.base_url_crd_crdallgen
 
   lifecycle {
     postcondition {
@@ -37,12 +43,12 @@ resource "kubectl_manifest" "base_crd_crdallgen" {
   server_side_apply = true
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 }
 
 data "http" "base_crd_operator" {
-  url = local.url_base_crd_operator
+  url = local.base_url_crd_operator
 
   lifecycle {
     postcondition {
@@ -63,11 +69,11 @@ resource "kubectl_manifest" "base_crd_operator" {
   server_side_apply = true
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 }
 
-resource "helm_release" "base" {
+resource "helm_release" "istio_base" {
   count = var.istio_enabled && var.istio_base_enabled ? 1 : 0
 
   name             = "istio-base"
@@ -78,15 +84,10 @@ resource "helm_release" "base" {
   namespace        = var.istio_base_namespace
   skip_crds        = true
 
-  dynamic "set" {
-    for_each = var.istio_platform != "" ? [""] : []
-    content {
-      name  = "global.platform"
-      value = var.istio_platform
-    }
-  }
-
-  values = [yamlencode(var.istio_base_common_helm_values)]
+  values = [
+    local.base_default_helm_values,
+    yamlencode(var.istio_base_overlay_helm_values),
+  ]
 
   depends_on = [
     kubernetes_namespace_v1.istio_base_namespace,

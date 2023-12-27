@@ -1,5 +1,9 @@
 locals {
-  ingressgateway_backendconfig_name = "istio-ingressgateway"
+  istio_ingressgateway_default_helm_values = templatefile("${path.module}/templates/istio-ingressgateway/istio-ingressgateway-default-helm-values.yaml.tftpl", {
+    jaeger_spec_nodeselector                = jsonencode(var.istio_oss_stack_default_nodeselector),
+    nodeselector                            = jsonencode(var.istio_oss_stack_default_nodeselector),
+    istio_ingressgateway_backendconfig_name = var.istio_ingressgateway_backendconfig_name # This is not the YAML path
+  })
 }
 
 resource "kubernetes_namespace_v1" "istio_ingressgateway_namespace" {
@@ -15,56 +19,54 @@ resource "kubernetes_namespace_v1" "istio_ingressgateway_namespace" {
   }
 
   depends_on = [
-    helm_release.istiod,
+    helm_release.istio_istiod,
   ]
 }
 
-resource "kubernetes_manifest" "istio_ingressgateway_backendconfig" { # TODO Replace with kubectl
+resource "kubectl_manifest" "istio_ingressgateway_backendconfig" {
   count = local.istio.enabled && var.istio_ingressgateway_enabled ? 1 : 0
-  manifest = {
-    "apiVersion" = "cloud.google.com/v1"
-    "kind"       = "BackendConfig"
-    "metadata" = {
-      "name"      = local.ingressgateway_backendconfig_name
-      "namespace" = var.istio_ingressgateway_namespace
-    }
-    "spec" = {
-      "healthCheck" = {
-        checkIntervalSec = 10
-        port             = 15021
-        requestPath      = "/healthz/ready"
-        timeoutSec       = 2
-        type             = "HTTP"
-      }
-    }
-  }
+  yaml_body = templatefile("${path.module}/templates/istio-ingressgateway/istio-ingressgateway-backendconfig.yaml.tftpl", {
+    name      = var.istio_ingressgateway_backendconfig_name,
+    namespace = var.istio_ingressgateway_namespace
+  })
 
   depends_on = [
     kubernetes_namespace_v1.istio_ingressgateway_namespace
   ]
 }
 
-resource "helm_release" "ingressgateway" {
-  /* count = local.istio.enabled && local.ingressgateway_enabled ? 1 : 0 */
-  for_each = { for k, v in var.istio_ingressgateway_instance : k => v if var.istio_enabled && var.istio_ingressgateway_enabled } # TODO Review condition
+resource "helm_release" "istio_ingressgateway" {
+  count = local.istio.enabled && var.istio_ingressgateway_enabled ? 1 : 0
 
-  /* name             = "istio-ingressgateway-${each.value.major_version_suffix}" */ # FIXME Think
   name             = "istio-ingressgateway"
   repository       = local.istio.helm_repo
   chart            = "gateway"
-  version          = each.value.version
+  version          = var.istio_ingressgateway_version
   create_namespace = false
   namespace        = var.istio_ingressgateway_namespace
 
-  values = [yamlencode(merge(var.istio_ingressgateway_common_helm_values, each.value.helm_values))]
-
-  # Container-native load balancing
-  # https://cloud.google.com/kubernetes-engine/docs/concepts/ingress#container-native_load_balancing
-  # Service should be annotated automatically with: "cloud.google.com/neg: '{"ingress": true}'"
+  values = [
+    local.istio_ingressgateway_default_helm_values,
+    yamlencode(var.istio_ingressgateway_overlay_helm_values)
+  ]
 
   depends_on = [
-    helm_release.istiod,
+    helm_release.istio_istiod,
     kubernetes_namespace_v1.istio_ingressgateway_namespace,
-    kubernetes_manifest.istio_ingressgateway_backendconfig
+    kubectl_manifest.istio_ingressgateway_backendconfig
+  ]
+}
+
+resource "kubectl_manifest" "istio_ingressgateway_shared_secured_gateway" {
+  count = local.istio.enabled && var.istio_ingressgateway_enabled && var.istio_ingressgateway_create_shared_secured_gateway ? 1 : 0
+  yaml_body = templatefile("${path.module}/templates/istio-ingressgateway/istio-ingressgateway-shared-secured-gateway.yaml.tftpl", {
+    name           = var.istio_ingressgateway_shared_secured_gateway_name,
+    namespace      = var.istio_ingressgateway_shared_secured_gateway_namespace
+    credentialname = "istio-ingressgateway" # FIXME
+  })
+
+  depends_on = [
+    kubernetes_namespace_v1.istio_ingressgateway_namespace,
+    helm_release.istio_ingressgateway
   ]
 }

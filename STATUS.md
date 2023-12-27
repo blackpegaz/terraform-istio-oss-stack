@@ -2,13 +2,13 @@
 
 ## TO-DO 
 - [ ] Manage secrets/certificats
-- [ ] Simplify module with layers
+- [x] Simplify module with layers
 - [ ] Manage Ingress
 - [ ] Manage Gateway API
 - [ ] Manage "addons" exposition
 - [ ] Manage "addons" authentication
 - [ ] Manage servicemonitor
-- [ ] Manage CRDs
+- [x] Manage CRDs
 - [ ] Add examples
 
 ## TO-THINK

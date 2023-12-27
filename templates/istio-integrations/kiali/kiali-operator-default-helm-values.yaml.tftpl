@@ -1,0 +1,37 @@
+cr:
+  create: true
+  name: kiali
+  namespace: istio-system
+  spec:
+    auth:
+      strategy: anonymous # FIXME
+    deployment:
+      view_only_mode: true
+      accessible_namespaces: ${cr_spec_deployment_accessible_namespaces}
+      node_selector: ${istio_oss_stack_default_nodeselector}
+    external_services:
+      grafana:
+        enabled: false
+      istio:
+        component_status:
+          components:
+          - app_label: istiod
+            is_core: true
+          - app_label: istio-ingressgateway
+            is_core: true
+            is_proxy: true
+            namespace: ${istio_ingressgateway_namespace}
+          enabled: true
+        config_map_name: istio-${istio_stable_revision}
+        istio_sidecar_injector_config_map_name: istio-sidecar-injector-${istio_stable_revision}
+        istiod_deployment_name: istiod-${istio_stable_revision}
+        root_namespace: ${istiod_namespace}
+      prometheus:
+        url: http://${prometheus_in_cluster_url}/
+      tracing:
+        enabled: true
+        in_cluster_url: http://jaeger-query.${jaeger_operator_namespace}.svc:16685/jaeger
+        url: https://jaeger.${domain}
+        use_grpc: true
+nodeSelector: ${istio_oss_stack_default_nodeselector}
+onlyViewOnlyMode: true

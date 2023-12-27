@@ -1,0 +1,19 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: ${name}
+  namespace: ${namespace}
+spec:
+  selector:
+    istio: ingressgateway # FIXME Should match the label present on the istio-ingressgateway deployment. 
+  servers:
+  - hosts:
+    - '*'
+    port:
+      name: https
+      number: 443
+      protocol: HTTPS
+    tls:
+      credentialName: ${credentialname}
+      mode: SIMPLE

@@ -1,0 +1,10 @@
+extraEnv:
+- name: KAFKA-PROVISION
+  value: "false"
+- name: ES-PROVISION
+  value: "false"
+jaeger:
+  create: false # FIXME We don't see any trace from istiod when we use this feature. 
+nodeSelector: ${nodeselector}
+webhooks:
+  port: 10290 # FIXME Add this port to firewall rule 
