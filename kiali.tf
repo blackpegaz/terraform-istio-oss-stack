@@ -21,7 +21,7 @@ resource "kubernetes_namespace_v1" "kiali_operator_namespace" {
 
   lifecycle {
     ignore_changes  = [metadata]
-    prevent_destroy = false
+    prevent_destroy = true
   }
 }
 

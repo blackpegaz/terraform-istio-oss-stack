@@ -17,7 +17,7 @@ resource "kubernetes_namespace_v1" "istio_base_namespace" {
 
   lifecycle {
     ignore_changes  = [metadata]
-    prevent_destroy = false
+    prevent_destroy = true
   }
 }
 
@@ -43,7 +43,7 @@ resource "kubectl_manifest" "base_crd_crdallgen" {
   server_side_apply = true
 
   lifecycle {
-    prevent_destroy = false
+    prevent_destroy = true
   }
 }
 
@@ -69,7 +69,7 @@ resource "kubectl_manifest" "base_crd_operator" {
   server_side_apply = true
 
   lifecycle {
-    prevent_destroy = false
+    prevent_destroy = true
   }
 }
 
