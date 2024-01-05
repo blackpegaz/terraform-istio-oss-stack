@@ -17,13 +17,13 @@ variable "prometheus_in_cluster_url" {
 
 #### ISTIO #### 
 variable "istio_enabled" {
-  description = "enable istio"
+  description = "Flag to enable or disable the installation of all istio components"
   type        = bool
   default     = true
 }
 
 variable "istio_helm_repo" {
-  description = "istio helm repository"
+  description = "The URL of the Istio Helm repository"
   type        = string
   default     = "https://istio-release.storage.googleapis.com/charts"
 }
@@ -52,25 +52,25 @@ variable "istio_stable_revision" {
 
 # istio/base
 variable "istio_base_enabled" {
-  description = "enable helm install of istio base"
+  description = "Flag to enable or disable the installation of istio-base components"
   type        = bool
   default     = true
 }
 
 variable "istio_base_namespace" {
-  description = "istio base namespace"
+  description = "The name of the istio-base namespace"
   type        = string
   default     = "istio-system"
 }
 
 variable "istio_base_crds_version" {
-  description = "base crds version"
+  description = "The version of the istio-base CRDs"
   type        = string
   default     = ""
 }
 
 variable "istio_base_version" {
-  description = "istio_base_version"
+  description = "The version of the istio-base Helm release"
   type        = string
   default     = ""
 }
@@ -83,19 +83,19 @@ variable "istio_base_overlay_helm_values" {
 
 # istio/cni
 variable "istio_cni_enabled" {
-  description = "enable helm install of istio cni"
+  description = "Flag to enable or disable the installation of istio-cni components"
   type        = bool
   default     = true
 }
 
 variable "istio_cni_version" {
-  description = "istio_cni_version"
+  description = "The version of the istio-cni Helm release"
   type        = string
   default     = ""
 }
 
 variable "istio_cni_namespace" {
-  description = "istio cni namespace"
+  description = "The name of the istio-cni namespace"
   type        = string
   default     = "kube-system"
 }
@@ -108,13 +108,13 @@ variable "istio_cni_overlay_helm_values" {
 
 # istio/istiod
 variable "istio_istiod_enabled" {
-  description = "enable helm install of istio istiod"
+  description = "Flag to enable or disable the installation of istio-istiod components"
   type        = bool
   default     = true
 }
 
 variable "istio_istiod_namespace" {
-  description = "istio istiod namespace"
+  description = "The name of the istio-istiod namespace"
   type        = string
   default     = "istio-system"
 }
@@ -133,13 +133,13 @@ variable "istio_istiod_instance" {
 
 # istio/istio-ingressgateway
 variable "istio_ingressgateway_enabled" {
-  description = "enable helm install of istio ingressgateway"
+  description = "Flag to enable or disable the installation of istio-ingressgateway components"
   type        = bool
   default     = false
 }
 
 variable "istio_ingressgateway_version" {
-  description = "istio_ingressgateway_version"
+  description = "The version of the istio-ingressgateway Helm release"
   type        = string
   default     = ""
 }
@@ -151,7 +151,7 @@ variable "istio_ingressgateway_create_namespace" {
 }
 
 variable "istio_ingressgateway_namespace" {
-  description = "istio ingressgateway namespace"
+  description = "The name of the istio-ingressgateway namespace"
   type        = string
   default     = "istio-ingress"
 }
@@ -182,31 +182,31 @@ variable "istio_ingressgateway_shared_secured_gateway_name" {
 }
 
 variable "istio_ingressgateway_shared_secured_gateway_namespace" {
-  description = "istio ingressgateway shared secured gateway name"
+  description = "The name of the istio-ingressgateway/shared-secured-gateway namespace"
   type        = string
   default     = "istio-ingress"
 }
 
 #### KIALI ####
 variable "kiali_operator_enabled" {
-  description = "enable helm install of kiali operator"
+  description = "Flag to enable or disable the installation of kiali-operator components"
   type        = bool
   default     = true
 }
 
 variable "kiali_helm_repo" {
-  description = "kiali helm repository"
+  description = "The URL of the Kiali Helm repository"
   type        = string
   default     = "https://kiali.org/helm-charts"
 }
 
 variable "kiali_operator_version" {
-  description = "kiali operator version"
+  description = "The version of the kiali-operator Helm release"
   type        = string
 }
 
 variable "kiali_operator_namespace" {
-  description = "kiali operator namespace"
+  description = "The name of the kiali-operator namespace"
   type        = string
   default     = "kiali-operator"
 }
@@ -225,24 +225,24 @@ variable "kiali_operator_accessible_namespaces" {
 
 #### JAEGER ####
 variable "jaeger_operator_enabled" {
-  description = "enable helm install of jaeger"
+  description = "Flag to enable or disable the installation of jaeger-operator components"
   type        = bool
   default     = true
 }
 
 variable "jaeger_helm_repo" {
-  description = "jaeger helm repository"
+  description = "The URL of the Jaeger Helm repository"
   type        = string
   default     = "https://jaegertracing.github.io/helm-charts"
 }
 
 variable "jaeger_operator_version" {
-  description = "jaeger operator version"
+  description = "The version of jaeger-operator Helm release"
   type        = string
 }
 
 variable "jaeger_operator_namespace" {
-  description = "jaeger operator namespace"
+  description = "The name of the jaeger-operator namespace"
   type        = string
   default     = "observability"
 }
@@ -267,25 +267,25 @@ variable "jaeger_operator_instance_allinone_image_version" {
 
 #### CERT-MANAGER ####
 variable "cert_manager_enabled" {
-  description = "enable helm install of cert-manager"
+  description = "Flag to enable or disable the installation of cert-manager components"
   type        = bool
   default     = true
 }
 
 variable "cert_manager_helm_repo" {
-  description = "cert-manager helm repository"
+  description = "The URL of the cert-manager Helm repository"
   type        = string
   default     = "https://charts.jetstack.io"
 }
 
 variable "cert_manager_version" {
-  description = "cert-manager version"
+  description = "The version of the cert-manager Helm release"
   type        = string
   default     = ""
 }
 
 variable "cert_manager_namespace" {
-  description = "cert-manager namespace"
+  description = "The name of the cert-manager namespace"
   type        = string
   default     = "cert-manager"
 }
@@ -298,25 +298,25 @@ variable "cert_manager_overlay_helm_values" {
 
 #### KUBE-PROMETHEUS-STACK ####
 variable "kube_prometheus_stack_enabled" {
-  description = "kube prometheus stack enabled"
+  description = "Flag to enable or disable the installation of kube-prometheus-stack-components"
   type        = bool
   default     = true
 }
 
 variable "kube_prometheus_stack_helm_repo" {
-  description = "kube prometheus stack helm repository"
+  description = "The URL of the kube-prometheus-stack Helm repository"
   type        = string
   default     = "https://prometheus-community.github.io/helm-charts"
 }
 
 variable "kube_prometheus_stack_version" {
-  description = "kube prometheus stack version"
+  description = "The version of the kube-prometheus-stack Helm release"
   type        = string
   default     = ""
 }
 
 variable "kube_prometheus_stack_namespace" {
-  description = "kube prometheus stack namespace"
+  description = "The name of the kube-prometheus-stack namespace"
   type        = string
   default     = "monitoring"
 }
