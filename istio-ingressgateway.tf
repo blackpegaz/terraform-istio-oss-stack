@@ -24,7 +24,7 @@ resource "kubernetes_namespace_v1" "istio_ingressgateway_namespace" {
 }
 
 resource "kubectl_manifest" "istio_ingressgateway_backendconfig" {
-  count = local.istio.enabled && var.istio_ingressgateway_enabled ? 1 : 0
+  count = local.istio.enabled && var.istio_platform == "gcp" && var.istio_ingressgateway_enabled ? 1 : 0
   yaml_body = templatefile("${path.module}/templates/istio-ingressgateway/istio-ingressgateway-backendconfig.yaml.tftpl", {
     name      = var.istio_ingressgateway_backendconfig_name,
     namespace = var.istio_ingressgateway_namespace

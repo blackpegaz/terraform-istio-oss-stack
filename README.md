@@ -13,9 +13,9 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_helm"></a> [helm](#provider\_helm) | ~> 2.12.1 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | 2.12.1 |
 | <a name="provider_http"></a> [http](#provider\_http) | 3.4.1 |
-| <a name="provider_kubectl"></a> [kubectl](#provider\_kubectl) | >= 2.0.4 |
+| <a name="provider_kubectl"></a> [kubectl](#provider\_kubectl) | 2.0.4 |
 | <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | 2.24.0 |
 
 ## Modules

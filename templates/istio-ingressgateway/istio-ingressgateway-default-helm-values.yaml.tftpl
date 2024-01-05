@@ -4,7 +4,7 @@ labels:
   istio: ingressgateway
 nodeSelector: ${nodeselector}
 service:
-  annotations:
+  annotations: # FIXME Variabilize
     cloud.google.com/app-protocols: '{"https":"HTTP2"}'
     cloud.google.com/backend-config: '{"default": "${istio_ingressgateway_backendconfig_name}"}'
     cloud.google.com/neg: '{"ingress":true}'
