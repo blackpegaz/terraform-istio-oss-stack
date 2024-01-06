@@ -73,6 +73,7 @@ resource "kubectl_manifest" "jaeger_operator_instance_allinone" {
     name                        = "jaeger",
     namespace                   = var.jaeger_operator_namespace,
     spec_allinone_image_version = var.jaeger_operator_instance_allinone_image_version
+    affinity                    = jsonencode(var.jaeger_operator_instance_allinone_affinity)
   })
 
   depends_on = [

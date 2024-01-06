@@ -5,7 +5,12 @@ variable "domain" {
 }
 
 variable "istio_oss_stack_default_nodeselector" {
-  description = "istio oss stack default nodeselector"
+  description = <<EOT
+  Map of key/value pairs used to configure nodeSelector for the entire stack.
+
+  Example: {"disktype":"ssd"}
+  }
+  EOT
   type        = map(any)
   default     = {}
 }
@@ -263,6 +268,35 @@ variable "jaeger_operator_instance_allinone_image_version" {
   description = "jaeger operator instance allinone image version"
   type        = string
   default     = "1.52.0"
+}
+
+variable "jaeger_operator_instance_allinone_affinity" {
+  description = <<EOT
+  Map of objects used to configure affinity rules for the Jaeger AllInOne instance.
+
+  Example:
+    {
+    "nodeAffinity": {
+      "requiredDuringSchedulingIgnoredDuringExecution": {
+        "nodeSelectorTerms": [
+          {
+            "matchExpressions": [
+              {
+                "key": "kubernetes.io/os",
+                "operator": "In",
+                "values": [
+                  "linux"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+  }
+  EOT
+  type        = map(any)
+  default     = {}
 }
 
 #### CERT-MANAGER ####
