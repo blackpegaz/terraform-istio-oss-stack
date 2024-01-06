@@ -1,6 +1,10 @@
 ### Global ###
 variable "domain" {
-  description = "domain used to configure external urls"
+  description = <<EOT
+  The FQDN used to configure external urls"
+
+  Example: "example.com"
+  EOT
   type        = string
 }
 
@@ -51,7 +55,7 @@ variable "istio_platform" {
 }
 
 variable "istio_stable_revision" {
-  description = "istio stable revision"
+  description = "istio stable revision" # FIXME
   type        = string
 }
 
@@ -81,7 +85,7 @@ variable "istio_base_version" {
 }
 
 variable "istio_base_overlay_helm_values" {
-  description = "istio base overlay helm values"
+  description = "Any values to pass as an overlay to the istio-base Helm values"
   type        = any
   default     = {}
 }
@@ -106,7 +110,7 @@ variable "istio_cni_namespace" {
 }
 
 variable "istio_cni_overlay_helm_values" {
-  description = "istio cni overlay helm values"
+  description = "Any values to pass as an overlay to the istio-cni Helm values"
   type        = any
   default     = {}
 }
@@ -125,13 +129,25 @@ variable "istio_istiod_namespace" {
 }
 
 variable "istio_istiod_overlay_helm_values" {
-  description = "istio istiod overlay helm values"
+  description = "Any values to pass as an overlay to the istio-istiod Helm values"
   type        = any
   default     = {}
 }
 
 variable "istio_istiod_instance" {
-  description = "The istiod instance to create"
+  description = <<EOT
+  Map of objects used to configure one or more instances of istio-istiod.
+
+  Example: {
+    "1-19" = {
+      version = "1.19.3"
+      helm_values = {
+        "revision": "1-19",
+        "revisionTags": ["default","prod-stable"] 
+      }
+    },
+  }
+  EOT
   type        = any
   default     = {}
 }
@@ -150,7 +166,7 @@ variable "istio_ingressgateway_version" {
 }
 
 variable "istio_ingressgateway_create_namespace" {
-  description = "enable helm install of istio ingressgateway"
+  description = "Flag to enable or disable the creation of the istio-ingressgateway namespace"
   type        = bool
   default     = true
 }
@@ -162,26 +178,26 @@ variable "istio_ingressgateway_namespace" {
 }
 
 variable "istio_ingressgateway_backendconfig_name" {
-  description = "istio ingressgateway backendconfig name"
+  description = "The name of the istio-ingressgateway BackendConfig (Only if platform is equal to GCP)"
   type        = string
   default     = "istio-ingressgateway"
 }
 
 
 variable "istio_ingressgateway_overlay_helm_values" {
-  description = "istio ingressgateway common helm values"
+  description = "Any values to pass as an overlay to the istio-ingressgateway Helm values"
   type        = any
   default     = {}
 }
 
 variable "istio_ingressgateway_create_shared_secured_gateway" {
-  description = "istio ingressgateway backendconfig name"
+  description = "Flag to enable or disable the creation of the Istio Shared Secured Gateway"
   type        = bool
   default     = true
 }
 
 variable "istio_ingressgateway_shared_secured_gateway_name" {
-  description = "istio ingressgateway shared secured gateway name"
+  description = "The name of the istio-ingressgateway of the Istio Shared Secured Gateway"
   type        = string
   default     = "istio-ingressgateway"
 }
@@ -217,13 +233,17 @@ variable "kiali_operator_namespace" {
 }
 
 variable "kiali_operator_overlay_helm_values" {
-  description = "kiali operator helm values"
+  description = "Any values to pass as an overlay to the kiali-operator Helm values"
   type        = any
   default     = {}
 }
 
 variable "kiali_operator_accessible_namespaces" {
-  description = "kiali operator accessible namespaces"
+  description = <<EOT
+  List of namespaces which are accessible to the Kiali server itself. Only these namespaces will be displayed into the Kiali UI.
+
+  Example: ["istio-system","mycorp_.*"]
+  EOT
   type        = list(any)
   default     = []
 }
@@ -253,26 +273,26 @@ variable "jaeger_operator_namespace" {
 }
 
 variable "jaeger_operator_overlay_helm_values" {
-  description = "jaeger operator helm values"
+  description = "Any values to pass as an overlay to the jaeger-operator Helm values"
   type        = any
   default     = {}
 }
 
 variable "jaeger_operator_create_instance_allinone" {
-  description = "jaeger operator create instance allinone"
+  description = "Flag to enable or disable the creation of a Jaeger All-in-One instance"
   type        = bool
   default     = true
 }
 
 variable "jaeger_operator_instance_allinone_image_version" {
-  description = "jaeger operator instance allinone image version"
+  description = "The version of the Jaeger All-in-One instance image"
   type        = string
   default     = "1.52.0"
 }
 
 variable "jaeger_operator_instance_allinone_affinity" {
   description = <<EOT
-  Map of objects used to configure affinity rules for the Jaeger AllInOne instance.
+  Map of objects used to configure affinity rules for the Jaeger All-in-One instance.
 
   Example:
     {
@@ -325,7 +345,7 @@ variable "cert_manager_namespace" {
 }
 
 variable "cert_manager_overlay_helm_values" {
-  description = "kiali operator helm values"
+  description = "Any values to pass as an overlay to the cert-manager Helm values"
   type        = any
   default     = {}
 }
@@ -356,7 +376,7 @@ variable "kube_prometheus_stack_namespace" {
 }
 
 variable "kube_prometheus_stack_overlay_helm_values" {
-  description = "kube prometheus stack overlay helm values"
+  description = "Any values to pass as an overlay to the kube-prometheus-stack Helm values"
   type        = any
   default     = {}
 }
