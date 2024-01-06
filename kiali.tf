@@ -2,13 +2,13 @@ locals {
   kiali_operator_url_crd_crds = "https://raw.githubusercontent.com/kiali/helm-charts/v${var.kiali_operator_version}/kiali-operator/crds/crds.yaml"
   kiali_operator_default_helm_values = templatefile("${path.module}/templates/istio-integrations/kiali/kiali-operator-default-helm-values.yaml.tftpl", {
     cr_spec_deployment_accessible_namespaces = jsonencode(distinct(flatten([[var.istio_istiod_namespace], [var.istio_ingressgateway_namespace], [var.kiali_operator_accessible_namespaces]]))),
-    domain                                   = var.domain,                                           # This is not the YAML path
-    istio_stable_revision                    = var.istio_stable_revision,                            # This is not the YAML path
-    istio_oss_stack_default_nodeselector     = jsonencode(var.istio_oss_stack_default_nodeselector), # This is not the YAML path
-    istiod_namespace                         = var.istio_istiod_namespace,                           # This is not the YAML path
-    istio_ingressgateway_namespace           = var.istio_ingressgateway_namespace,                   # This is not the YAML path
-    jaeger_operator_namespace                = var.jaeger_operator_namespace,                        # This is not the YAML path
-    prometheus_in_cluster_url                = var.prometheus_in_cluster_url                         # This is not the YAML path  
+    domain                                   = var.domain,                                                                                                                                        # This is not the YAML path
+    istio_stable_revision                    = var.istio_stable_revision,                                                                                                                         # This is not the YAML path
+    istio_oss_stack_default_nodeselector     = jsonencode(var.istio_oss_stack_default_nodeselector),                                                                                              # This is not the YAML path
+    istiod_namespace                         = var.istio_istiod_namespace,                                                                                                                        # This is not the YAML path
+    istio_ingressgateway_namespace           = var.istio_ingressgateway_namespace,                                                                                                                # This is not the YAML path
+    jaeger_operator_namespace                = var.jaeger_operator_namespace,                                                                                                                     # This is not the YAML path
+    prometheus_url                           = var.kube_prometheus_stack_enabled ? "http://kube-prometheus-stack-prometheus.${var.kube_prometheus_stack_namespace}.svc:9090" : var.prometheus_url # This is not the YAML path
   })
 }
 

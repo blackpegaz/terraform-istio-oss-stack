@@ -110,12 +110,12 @@ No modules.
 | <a name="input_kiali_operator_namespace"></a> [kiali\_operator\_namespace](#input\_kiali\_operator\_namespace) | The name of the kiali-operator namespace | `string` | `"kiali-operator"` | no |
 | <a name="input_kiali_operator_overlay_helm_values"></a> [kiali\_operator\_overlay\_helm\_values](#input\_kiali\_operator\_overlay\_helm\_values) | Any values to pass as an overlay to the kiali-operator Helm values | `any` | `{}` | no |
 | <a name="input_kiali_operator_version"></a> [kiali\_operator\_version](#input\_kiali\_operator\_version) | The version of the kiali-operator Helm release | `string` | n/a | yes |
-| <a name="input_kube_prometheus_stack_enabled"></a> [kube\_prometheus\_stack\_enabled](#input\_kube\_prometheus\_stack\_enabled) | Flag to enable or disable the installation of kube-prometheus-stack-components | `bool` | `true` | no |
+| <a name="input_kube_prometheus_stack_enabled"></a> [kube\_prometheus\_stack\_enabled](#input\_kube\_prometheus\_stack\_enabled) | Flag to enable or disable the installation of the kube-prometheus-stack components | `bool` | `true` | no |
 | <a name="input_kube_prometheus_stack_helm_repo"></a> [kube\_prometheus\_stack\_helm\_repo](#input\_kube\_prometheus\_stack\_helm\_repo) | The URL of the kube-prometheus-stack Helm repository | `string` | `"https://prometheus-community.github.io/helm-charts"` | no |
 | <a name="input_kube_prometheus_stack_namespace"></a> [kube\_prometheus\_stack\_namespace](#input\_kube\_prometheus\_stack\_namespace) | The name of the kube-prometheus-stack namespace | `string` | `"monitoring"` | no |
 | <a name="input_kube_prometheus_stack_overlay_helm_values"></a> [kube\_prometheus\_stack\_overlay\_helm\_values](#input\_kube\_prometheus\_stack\_overlay\_helm\_values) | Any values to pass as an overlay to the kube-prometheus-stack Helm values | `any` | `{}` | no |
 | <a name="input_kube_prometheus_stack_version"></a> [kube\_prometheus\_stack\_version](#input\_kube\_prometheus\_stack\_version) | The version of the kube-prometheus-stack Helm release | `string` | `""` | no |
-| <a name="input_prometheus_in_cluster_url"></a> [prometheus\_in\_cluster\_url](#input\_prometheus\_in\_cluster\_url) | prometheus in cluster url | `string` | n/a | yes |
+| <a name="input_prometheus_url"></a> [prometheus\_url](#input\_prometheus\_url) | The URL used to query the Prometheus Server.<br><br>  Example: "http://kube-prometheus-stack-prometheus.monitoring.svc:9090" | `string` | `""` | no |
 
 ## Outputs
 

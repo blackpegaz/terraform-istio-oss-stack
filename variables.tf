@@ -19,9 +19,14 @@ variable "istio_oss_stack_default_nodeselector" {
   default     = {}
 }
 
-variable "prometheus_in_cluster_url" {
-  description = "prometheus in cluster url"
+variable "prometheus_url" {
+  description = <<EOT
+  The URL used to query the Prometheus Server.
+
+  Example: "http://kube-prometheus-stack-prometheus.monitoring.svc:9090"
+  EOT
   type        = string
+  default     = ""
 }
 
 #### ISTIO #### 
@@ -352,7 +357,7 @@ variable "cert_manager_overlay_helm_values" {
 
 #### KUBE-PROMETHEUS-STACK ####
 variable "kube_prometheus_stack_enabled" {
-  description = "Flag to enable or disable the installation of kube-prometheus-stack-components"
+  description = "Flag to enable or disable the installation of the kube-prometheus-stack components"
   type        = bool
   default     = true
 }

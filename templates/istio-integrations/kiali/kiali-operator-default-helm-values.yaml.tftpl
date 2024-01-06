@@ -27,7 +27,7 @@ cr:
         istiod_deployment_name: istiod-${istio_stable_revision}
         root_namespace: ${istiod_namespace}
       prometheus:
-        url: http://${prometheus_in_cluster_url}/
+        url: ${prometheus_url}
       tracing:
         enabled: true
         in_cluster_url: http://jaeger-query.${jaeger_operator_namespace}.svc:16685/jaeger
