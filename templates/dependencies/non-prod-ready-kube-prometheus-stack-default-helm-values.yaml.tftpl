@@ -1,0 +1,170 @@
+alertmanager:
+  alertmanagerSpec:
+    nodeSelector: ${istio_oss_stack_default_nodeselector}
+    replicas: 2
+    # retention: 120h
+    # storage:
+    #   volumeClaimTemplate:
+    #     metadata:
+    #       name: data
+    #     spec:
+    #       storageClassName: csi-gce-pd-cmek # TO-ADAPT
+    #       accessModes:
+    #         - ReadWriteOnce
+    #       resources:
+    #         requests:
+    #           storage: 1Gi
+  enabled: true
+defaultRules:
+  rules:
+    alertmanager: true
+    configReloaders: true
+    etcd: true
+    general: true
+    k8s: true
+    kubeApiserverAvailability: true
+    kubeApiserverBurnrate: true
+    kubeApiserverHistogram: true
+    kubeApiserverSlos: true
+    kubeControllerManager: false
+    kubePrometheusGeneral: true
+    kubePrometheusNodeRecording: true
+    kubeProxy: false
+    kubeSchedulerAlerting: true
+    kubeSchedulerRecording: true
+    kubeStateMetrics: true
+    kubelet: true
+    kubernetesApps: true
+    kubernetesResources: true
+    kubernetesStorage: true
+    kubernetesSystem: true
+    network: true
+    node: true
+    nodeExporterAlerting: true
+    nodeExporterRecording: true
+    prometheus: true
+    prometheusOperator: true
+    windows: true
+grafana:
+  adminPassword: prom-operator
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - disableDeletion: false
+        editable: true
+        folder: Istio
+        name: provider-site
+        options:
+          path: /var/lib/grafana/dashboards/provider-site
+        orgId: 1
+        type: file
+  dashboards:
+    provider-site:
+      istio-control-plane:        # TODO Use CRDs to import dashboards 
+        datasource: Prometheus
+        gnetId: 7645
+        revision: 182
+      istio-mesh:
+        datasource: Prometheus
+        gnetId: 7639
+        revision: 182
+      istio-performance:
+        datasource: Prometheus
+        gnetId: 11829
+        revision: 182
+      istio-service:
+        datasource: Prometheus
+        gnetId: 7636
+        revision: 182
+      istio-workload:
+        datasource: Prometheus
+        gnetId: 7630
+        revision: 182
+  defaultDashboardsEnabled: true
+  defaultDashboardsTimezone: utc
+  deleteDatasources: []
+  enabled: true
+  persistence:
+    enabled: false
+    # type: statefulset
+    # storageClassName: csi-gce-pd-cmek # TO-ADAPT
+    # accessModes:
+    #   - ReadWriteOnce
+    # size: 1Gi
+    # finalizers:
+    #   - kubernetes.io/pvc-protection
+  nodeSelector: ${istio_oss_stack_default_nodeselector}
+kube-state-metrics:
+  nodeSelector: ${istio_oss_stack_default_nodeselector}
+  prometheus:
+    monitor:
+      enabled: true
+kubeApiServer:
+  enabled: true
+kubeControllerManager:
+  enabled: false
+kubeDns:
+  enabled: true
+kubeEtcd:
+  enabled: false
+kubeProxy:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeStateMetrics:
+  enabled: true
+kubeTargetVersionOverride: ""
+kubeVersionOverride: ""
+kubelet:
+  enabled: true
+kubernetesServiceMonitors:
+  enabled: true
+nodeExporter:
+  enabled: true
+  operatingSystems:
+    darwin:
+      enabled: false
+    linux:
+      enabled: true
+prometheus:
+  enabled: true
+  prometheusSpec:
+    additionalScrapeConfigs: # TODO Use ServiceMonitor
+    - job_name: istiod
+      kubernetes_sd_configs:
+      - namespaces:
+          names:
+          - istio-system
+        role: endpoints
+      relabel_configs:
+      - action: keep
+        regex: istiod;http-monitoring
+        source_labels:
+        - __meta_kubernetes_service_name
+        - __meta_kubernetes_endpoint_port_name
+    - job_name: envoy-stats
+      kubernetes_sd_configs:
+      - role: pod
+      metrics_path: /stats/prometheus
+      relabel_configs:
+      - action: keep
+        regex: .*-envoy-prom
+        source_labels:
+        - __meta_kubernetes_pod_container_port_name
+    nodeSelector: ${istio_oss_stack_default_nodeselector}
+    # retention: 10d        # TO-ADAPT
+    # retentionSize: 10GiB  # TO-ADAPT
+    # storageSpec:
+    #   volumeClaimTemplate:
+    #     metadata:
+    #       name: data
+    #     spec:
+    #       storageClassName: csi-gce-pd-cmek # TO-ADAPT
+    #       accessModes:
+    #         - ReadWriteOnce
+    #       resources:
+    #         requests:
+    #           storage: 10Gi # TO-ADAPT
+windowsMonitoring:
+  enabled: false

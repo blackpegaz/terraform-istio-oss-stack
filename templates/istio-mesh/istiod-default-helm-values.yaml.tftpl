@@ -1,0 +1,12 @@
+pilot:
+  autoscaleMin: 2
+  nodeSelector: ${pilot_nodeselector}
+meshConfig:
+  %{if jaeger_operator_enabled != "" }
+  defaultConfig:
+    tracing:
+      zipkin:
+        address: jaeger-collector.${jaeger_operator_namespace}.svc:9411 
+  %{ endif }
+istio_cni:
+  enabled: ${cni_enabled}

@@ -1,0 +1,14 @@
+---
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: ${name}
+  namespace: ${namespace}
+spec:
+  healthCheck:
+    checkIntervalSec: 10
+    port: 15021
+    requestPath: /healthz/ready
+    timeoutSec: 2
+    type: HTTP
+  timeoutSec: 120
