@@ -1,11 +1,14 @@
 locals {
-  base_url_crd_crdallgen = "https://raw.githubusercontent.com/istio/istio/${var.istio_base_crds_version}/manifests/charts/base/crds/crd-all.gen.yaml"
-  base_url_crd_operator  = "https://raw.githubusercontent.com/istio/istio/${var.istio_base_crds_version}/manifests/charts/base/crds/crd-operator.yaml"
+  base_crds_version      = var.istio_base_crds_version != "" ? var.istio_base_crds_version : coalesce(local.istio.canary_version, local.istio.stable_version)
+  base_url_crd_crdallgen = "https://raw.githubusercontent.com/istio/istio/${local.base_crds_version}/manifests/charts/base/crds/crd-all.gen.yaml"
+  base_url_crd_operator  = "https://raw.githubusercontent.com/istio/istio/${local.base_crds_version}/manifests/charts/base/crds/crd-operator.yaml"
 
   base_default_helm_values = templatefile("${path.module}/templates/istio-mesh/base-default-helm-values.yaml.tftpl", {
-    defaultrevision = var.istio_stable_revision,
+    defaultrevision = local.istio.stable_revision,
     platform        = var.istio_platform
   })
+
+  base_version = var.istio_base_version != "" ? var.istio_base_version : local.istio.stable_version
 }
 
 resource "kubernetes_namespace_v1" "istio_base_namespace" {
@@ -79,7 +82,7 @@ resource "helm_release" "istio_base" {
   name             = "istio-base"
   repository       = local.istio.helm_repo
   chart            = "base"
-  version          = var.istio_base_version
+  version          = local.base_version
   create_namespace = false
   namespace        = var.istio_base_namespace
   skip_crds        = true

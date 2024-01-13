@@ -59,11 +59,6 @@ variable "istio_platform" {
   default = ""
 }
 
-variable "istio_stable_revision" {
-  description = "istio stable revision" # FIXME
-  type        = string
-}
-
 # istio/base
 variable "istio_base_enabled" {
   description = "Flag to enable or disable the installation of istio-base components"
@@ -139,6 +134,26 @@ variable "istio_istiod_overlay_helm_values" {
   default     = {}
 }
 
+variable "revisiontags_stable" {
+  description = "The name of the \"revisionTag\" which is bound to the \"stable\" Istio revision. Your app should reference this revisionTag when there is no canary upgrade in progress."
+  type        = string
+  default     = "prod-stable"
+  validation {
+    condition     = !contains(["default"], lower(var.revisiontags_stable))
+    error_message = "Err: \"default\" tag is a reserved word already affected to Stable version."
+  }
+}
+
+variable "revisiontags_canary" {
+  description = "The name of the \"revisionTag\" which is bound to the \"canary\" Istio revision. Your app should only reference this revisionTag in case of a canary upgrade."
+  type        = string
+  default     = "prod-canary"
+  validation {
+    condition     = !contains(["default"], lower(var.revisiontags_canary))
+    error_message = "Err: \"default\" tag is a reserved word already affected to Stable version."
+  }
+}
+
 variable "istio_istiod_instance" {
   description = <<EOT
   Map of objects used to configure one or more instances of istio-istiod.
@@ -146,15 +161,58 @@ variable "istio_istiod_instance" {
   Example: {
     "1-19" = {
       version = "1.19.3"
+      revision = "1-19"
       helm_values = {
-        "revision": "1-19",
-        "revisionTags": ["default","prod-stable"] 
+        "pilot": {
+          "autoscaleEnabled": true,
+          "autoscaleMax": 3,
+          "autoscaleMin": 2
+        },
       }
     },
   }
   EOT
   type        = any
   default     = {}
+
+  validation {
+    condition = alltrue([
+    for instance in var.istio_istiod_instance : can(regex("^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$", instance.version))])
+    error_message = "Err: Version must be defined and a valid semantic version."
+  }
+  validation {
+    condition = alltrue([
+    for instance in var.istio_istiod_instance : !can(regex("\\.", instance.revision)) && length(instance.revision) > 0])
+    error_message = "Err: Value for revison must be non null and cannot contain a dot(\".\") character."
+  }
+  validation {
+    condition = alltrue([
+    for instance in var.istio_istiod_instance : contains(["canary", "stable"], instance.revisiontags_binding)])
+    error_message = "Err: Value for revisiontags_binding should be either \"canary\" or \"stable\"."
+  }
+
+  # The next validation rule should never match due to constraint on revisiontags_binding.
+  validation {
+    condition = length([
+    for instance in var.istio_istiod_instance : instance]) <= 2
+    error_message = "Err: You cannot create more than two istiod instances."
+  }
+  validation {
+    condition     = length(distinct([for instance, instance_config in var.istio_istiod_instance : instance_config["revisiontags_binding"]])) == length([for instance in var.istio_istiod_instance : instance])
+    error_message = "Err: You cannot define more than one stable|canary istiod instance."
+  }
+
+  validation {
+    condition     = length(distinct([for instance, instance_config in var.istio_istiod_instance : instance_config["revision"]])) == length([for instance in var.istio_istiod_instance : instance])
+    error_message = "Err: You cannot set the same revision for two istiod instances."
+  }
+  validation {
+    condition = alltrue(flatten([
+      for instance, instance_config in var.istio_istiod_instance : [
+      for k, v in instance_config.helm_values : !can(regex("^(revision|revisionTags)$", k))]
+    ]))
+    error_message = "Err: You cannot override \"revision\" and \"revisionTags\" through \"helm_values\". Use \"revision\" and \"revisiontags_binding\" attributes."
+  }
 }
 
 # istio/istio-ingressgateway
@@ -168,6 +226,35 @@ variable "istio_ingressgateway_version" {
   description = "The version of the istio-ingressgateway Helm release"
   type        = string
   default     = ""
+
+  validation {
+    condition     = can(regex("^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$", var.istio_ingressgateway_version))
+    error_message = "Err: Version must be defined and a valid semantic version."
+  }
+}
+
+variable "istio_ingressgateway_revision_binding" {
+  description = "The binding to either the \"canary\" revisionTag or the \"stable\" revisionTag"
+  type        = string
+  default     = "stable"
+
+  validation {
+    condition     = contains(["canary", "stable"], var.istio_ingressgateway_revision_binding)
+    error_message = "Err: Value for revision_binding should be either \"canary\" or \"stable\"."
+  }
+}
+
+variable "istio_ingressgateway_overlay_helm_values" {
+  description = "Any values to pass as an overlay to the istio-ingressgateway Helm values"
+  type        = any
+  default     = {}
+
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.istio_ingressgateway_overlay_helm_values : !can(regex("^(revision)$", k))]
+    ))
+    error_message = "Err: You cannot override \"revision\" through \"helm_values\". Use \"istio_ingressgateway_revision_binding\" variable."
+  }
 }
 
 variable "istio_ingressgateway_create_namespace" {
@@ -186,13 +273,6 @@ variable "istio_ingressgateway_backendconfig_name" {
   description = "The name of the istio-ingressgateway BackendConfig (Only if platform is equal to GCP)"
   type        = string
   default     = "istio-ingressgateway"
-}
-
-
-variable "istio_ingressgateway_overlay_helm_values" {
-  description = "Any values to pass as an overlay to the istio-ingressgateway Helm values"
-  type        = any
-  default     = {}
 }
 
 variable "istio_ingressgateway_create_shared_secured_gateway" {

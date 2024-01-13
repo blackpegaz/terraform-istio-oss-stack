@@ -3,6 +3,7 @@ autoscaling:
 labels:
   istio: ingressgateway
 nodeSelector: ${nodeselector}
+revision: ${revision}
 service:
   annotations: # FIXME Variabilize
     cloud.google.com/app-protocols: '{"https":"HTTP2"}'

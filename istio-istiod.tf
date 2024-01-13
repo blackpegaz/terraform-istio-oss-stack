@@ -5,12 +5,13 @@ locals {
     jaeger_operator_enabled   = var.jaeger_operator_enabled,  # This is not the YAML path
     jaeger_operator_namespace = var.jaeger_operator_namespace # This is not the YAML path
   })
+
 }
 
 resource "helm_release" "istio_istiod" {
-  for_each = { for k, v in var.istio_istiod_instance : k => v if var.istio_enabled && var.istio_istiod_enabled }
+  for_each = { for instance, instance_config in var.istio_istiod_instance : instance => instance_config if var.istio_enabled && var.istio_istiod_enabled }
 
-  name       = "istio-istiod-${each.key}"
+  name       = "istio-istiod-${each.value.revision}"
   repository = local.istio.helm_repo
   chart      = "istiod"
   version    = each.value.version
@@ -19,6 +20,8 @@ resource "helm_release" "istio_istiod" {
   values = [
     local.istiod_default_helm_values,
     yamlencode(var.istio_istiod_overlay_helm_values),
+    yamlencode({ "revision" : each.value.revision }),
+    yamlencode({ "revisionTags" : local.istio.revisiontags[each.value.revisiontags_binding] }),
     yamlencode(each.value.helm_values)
   ]
 

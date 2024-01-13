@@ -86,16 +86,16 @@ No modules.
 | <a name="input_istio_ingressgateway_enabled"></a> [istio\_ingressgateway\_enabled](#input\_istio\_ingressgateway\_enabled) | Flag to enable or disable the installation of istio-ingressgateway components | `bool` | `false` | no |
 | <a name="input_istio_ingressgateway_namespace"></a> [istio\_ingressgateway\_namespace](#input\_istio\_ingressgateway\_namespace) | The name of the istio-ingressgateway namespace | `string` | `"istio-ingress"` | no |
 | <a name="input_istio_ingressgateway_overlay_helm_values"></a> [istio\_ingressgateway\_overlay\_helm\_values](#input\_istio\_ingressgateway\_overlay\_helm\_values) | Any values to pass as an overlay to the istio-ingressgateway Helm values | `any` | `{}` | no |
+| <a name="input_istio_ingressgateway_revision_binding"></a> [istio\_ingressgateway\_revision\_binding](#input\_istio\_ingressgateway\_revision\_binding) | The binding to either the "canary" revisionTag or the "stable" revisionTag | `string` | `"stable"` | no |
 | <a name="input_istio_ingressgateway_shared_secured_gateway_name"></a> [istio\_ingressgateway\_shared\_secured\_gateway\_name](#input\_istio\_ingressgateway\_shared\_secured\_gateway\_name) | The name of the istio-ingressgateway of the Istio Shared Secured Gateway | `string` | `"istio-ingressgateway"` | no |
 | <a name="input_istio_ingressgateway_shared_secured_gateway_namespace"></a> [istio\_ingressgateway\_shared\_secured\_gateway\_namespace](#input\_istio\_ingressgateway\_shared\_secured\_gateway\_namespace) | The name of the istio-ingressgateway/shared-secured-gateway namespace | `string` | `"istio-ingress"` | no |
 | <a name="input_istio_ingressgateway_version"></a> [istio\_ingressgateway\_version](#input\_istio\_ingressgateway\_version) | The version of the istio-ingressgateway Helm release | `string` | `""` | no |
 | <a name="input_istio_istiod_enabled"></a> [istio\_istiod\_enabled](#input\_istio\_istiod\_enabled) | Flag to enable or disable the installation of istio-istiod components | `bool` | `true` | no |
-| <a name="input_istio_istiod_instance"></a> [istio\_istiod\_instance](#input\_istio\_istiod\_instance) | Map of objects used to configure one or more instances of istio-istiod.<br><br>  Example: {<br>    "1-19" = {<br>      version = "1.19.3"<br>      helm\_values = {<br>        "revision": "1-19",<br>        "revisionTags": ["default","prod-stable"] <br>      }<br>    },<br>  } | `any` | `{}` | no |
+| <a name="input_istio_istiod_instance"></a> [istio\_istiod\_instance](#input\_istio\_istiod\_instance) | Map of objects used to configure one or more instances of istio-istiod.<br><br>  Example: {<br>    "1-19" = {<br>      version = "1.19.3"<br>      revision = "1-19"<br>      helm\_values = {<br>        "pilot": {<br>          "autoscaleEnabled": true,<br>          "autoscaleMax": 3,<br>          "autoscaleMin": 2<br>        },<br>      }<br>    },<br>  } | `any` | `{}` | no |
 | <a name="input_istio_istiod_namespace"></a> [istio\_istiod\_namespace](#input\_istio\_istiod\_namespace) | The name of the istio-istiod namespace | `string` | `"istio-system"` | no |
 | <a name="input_istio_istiod_overlay_helm_values"></a> [istio\_istiod\_overlay\_helm\_values](#input\_istio\_istiod\_overlay\_helm\_values) | Any values to pass as an overlay to the istio-istiod Helm values | `any` | `{}` | no |
 | <a name="input_istio_oss_stack_default_nodeselector"></a> [istio\_oss\_stack\_default\_nodeselector](#input\_istio\_oss\_stack\_default\_nodeselector) | Map of key/value pairs used to configure nodeSelector for the entire stack.<br><br>  Example: {"disktype":"ssd"}<br>  } | `map(any)` | `{}` | no |
 | <a name="input_istio_platform"></a> [istio\_platform](#input\_istio\_platform) | (Optional) Platform where Istio is deployed. Possible values are: "openshift", "gcp", "".<br>  An empty value means it is a vanilla Kubernetes distribution, therefore no special treatment will be considered.<br><br>  Default: "" | `string` | `""` | no |
-| <a name="input_istio_stable_revision"></a> [istio\_stable\_revision](#input\_istio\_stable\_revision) | istio stable revision | `string` | n/a | yes |
 | <a name="input_jaeger_helm_repo"></a> [jaeger\_helm\_repo](#input\_jaeger\_helm\_repo) | The URL of the Jaeger Helm repository | `string` | `"https://jaegertracing.github.io/helm-charts"` | no |
 | <a name="input_jaeger_operator_create_instance_allinone"></a> [jaeger\_operator\_create\_instance\_allinone](#input\_jaeger\_operator\_create\_instance\_allinone) | Flag to enable or disable the creation of a Jaeger All-in-One instance | `bool` | `true` | no |
 | <a name="input_jaeger_operator_enabled"></a> [jaeger\_operator\_enabled](#input\_jaeger\_operator\_enabled) | Flag to enable or disable the installation of jaeger-operator components | `bool` | `true` | no |
@@ -116,12 +116,12 @@ No modules.
 | <a name="input_kube_prometheus_stack_overlay_helm_values"></a> [kube\_prometheus\_stack\_overlay\_helm\_values](#input\_kube\_prometheus\_stack\_overlay\_helm\_values) | Any values to pass as an overlay to the kube-prometheus-stack Helm values | `any` | `{}` | no |
 | <a name="input_kube_prometheus_stack_version"></a> [kube\_prometheus\_stack\_version](#input\_kube\_prometheus\_stack\_version) | The version of the kube-prometheus-stack Helm release | `string` | `""` | no |
 | <a name="input_prometheus_url"></a> [prometheus\_url](#input\_prometheus\_url) | The URL used to query the Prometheus Server.<br><br>  Example: "http://kube-prometheus-stack-prometheus.monitoring.svc:9090" | `string` | `""` | no |
+| <a name="input_revisiontags_canary"></a> [revisiontags\_canary](#input\_revisiontags\_canary) | The name of the "revisionTag" which is bound to the "canary" Istio revision. Your app should only reference this revisionTag in case of a canary upgrade. | `string` | `"prod-canary"` | no |
+| <a name="input_revisiontags_stable"></a> [revisiontags\_stable](#input\_revisiontags\_stable) | The name of the "revisionTag" which is bound to the "stable" Istio revision. Your app should reference this revisionTag when there is no canary upgrade in progress. | `string` | `"prod-stable"` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_istio_base_helm_metadata"></a> [istio\_base\_helm\_metadata](#output\_istio\_base\_helm\_metadata) | block status of the istio base helm release |
-| <a name="output_istio_cni_helm_metadata"></a> [istio\_cni\_helm\_metadata](#output\_istio\_cni\_helm\_metadata) | block status of the istio cni helm release |
-| <a name="output_istio_ingressgateway_helm_metadata"></a> [istio\_ingressgateway\_helm\_metadata](#output\_istio\_ingressgateway\_helm\_metadata) | block status of the istio gateway helm release |
+| <a name="output_istio"></a> [istio](#output\_istio) | Informations regarding Istio installation. |
 <!-- END_TF_DOCS -->

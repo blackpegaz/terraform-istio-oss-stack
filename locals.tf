@@ -7,10 +7,22 @@ locals {
   istio = {
     enabled   = var.istio_enabled
     helm_repo = var.istio_helm_repo
+    revisiontags = {
+      stable = distinct(concat(["default"], [var.revisiontags_stable]))
+      canary = var.revisiontags_canary
+    }
+    stable_version = element([
+      for instance, instance_config in var.istio_istiod_instance : instance_config["version"] if instance_config["revisiontags_binding"] == "stable"
+    ], 0)
+    stable_revision = element([
+      for instance, instance_config in var.istio_istiod_instance : instance_config["revision"] if instance_config["revisiontags_binding"] == "stable"
+    ], 0)
+    canary_version = try(element([
+      for instance, instance_config in var.istio_istiod_instance : instance_config["version"] if instance_config["revisiontags_binding"] == "canary"
+    ], 0), "")
+    canary_revision = try(element([
+      for instance, instance_config in var.istio_istiod_instance : instance_config["revision"] if instance_config["revisiontags_binding"] == "canary"
+    ], 0), "")
   }
-
-  # distribution_helm_values = lookup(local.per_distribution_helm_values, var.distribution, {})
-  # default_istiod_helm_values  = concat(lookup(local.distribution_helm_values, "istiod", []), local.cni_helm_values)
-  # { values = concat(local.default_base_helm_values, lookup(var.base_helm_config, "values", [])) }
 
 }
