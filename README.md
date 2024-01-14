@@ -1,3 +1,73 @@
+## Example
+
+```
+module "istio-oss-stack" {
+  #count  = var.enable_istio_oss_stack ? 1 : 0
+  source = "git::git@github.com:blackpegaz/terraform-istio-oss-stack.git?ref=beta-v2"
+
+  # Global
+  domain = "example.com"
+  istio_enabled = true
+  # istio_platform = "gcp"
+
+  # Common parameters for all istiod instances  
+  istio_istiod_overlay_helm_values = {}
+
+  # Map of istiod instances
+  istio_istiod_instance = {
+    "1-19" = {
+      version = "1.19.4"
+      revision = "1-19"
+      is_default_revision = false
+      revisiontags_binding = "old-stable"
+      helm_values = {}
+    },
+
+    "1-20" = {
+      version = "1.20.2"
+      revision = "1-20"
+      is_default_revision = true
+      revisiontags_binding = "stable"
+      helm_values = {
+        "pilot": {
+          "autoscaleEnabled": true,
+          "autoscaleMax": 3,
+          "autoscaleMin": 2
+        },
+      }
+    }
+  }
+  
+  # istio-ingressgateway
+  istio_ingressgateway_enabled = true
+  istio_ingressgateway_version = "1.20.2"
+  istio_ingressgateway_revision_binding = "stable"
+  istio_ingressgateway_overlay_helm_values = {}
+
+  istio_ingressgateway_create_shared_secured_gateway = false
+   
+  # kiali
+  kiali_operator_enabled = true
+  kiali_operator_version = "1.77.0"
+  kiali_operator_accessible_namespaces = ["istio-system","demo.*"]
+  kiali_operator_overlay_helm_values = {}
+
+  # jaeger
+  jaeger_operator_enabled = true
+  jaeger_operator_version = "2.49.0"
+  jaeger_operator_overlay_helm_values = {}
+
+  # cert-manager
+  cert_manager_enabled = true
+  cert_manager_version = "v1.13.3"
+  cert_manager_overlay_helm_values = {}
+
+  # kube-prometheus-stack
+  kube_prometheus_stack_enabled = true
+  kube_prometheus_stack_version = "55.5.0"
+}
+```
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
