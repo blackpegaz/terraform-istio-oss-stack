@@ -21,7 +21,7 @@ resource "helm_release" "istio_istiod" {
     local.istiod_default_helm_values,
     yamlencode(var.istio_istiod_overlay_helm_values),
     yamlencode({ "revision" : each.value.revision }),
-    yamlencode({ "revisionTags" : local.istio.revisiontags[each.value.revisiontags_binding] }),
+    yamlencode({ "revisionTags" : compact([local.istio.default_revision == each.value.revision ? "default" : null, local.istio.revisiontags[each.value.revisiontags_binding]]) }),
     yamlencode(each.value.helm_values)
   ]
 

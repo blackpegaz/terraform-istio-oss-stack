@@ -55,7 +55,7 @@ resource "helm_release" "istio_ingressgateway" {
 
   lifecycle {
     precondition {
-      condition     = alltrue([for instance in var.istio_istiod_instance : contains([var.istio_ingressgateway_revision_binding], instance.revisiontags_binding)])
+      condition     = anytrue([for instance in var.istio_istiod_instance : contains([var.istio_ingressgateway_revision_binding], instance.revisiontags_binding)])
       error_message = "The \"istio_ingressgateway_revision_binding\" variable does not bind an existing Istiod instance."
     }
   }
