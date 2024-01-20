@@ -150,7 +150,7 @@ variable "revisiontags_old_stable" {
   default     = "old-stable"
   validation {
     condition     = !contains(["default"], lower(var.revisiontags_old_stable))
-    error_message = "Err: \"default\" tag is a reserved word already and only affected to Stable version."
+    error_message = "Err: \"default\" tag is a reserved word which is managed by the module for the Stable revision."
   }
 }
 
@@ -160,7 +160,7 @@ variable "revisiontags_canary" {
   default     = "prod-canary"
   validation {
     condition     = !contains(["default"], lower(var.revisiontags_canary))
-    error_message = "Err: \"default\" tag is a reserved word already and only affected to Stable version."
+    error_message = "Err: \"default\" tag is a reserved word which is managed by the module for the Stable revision."
   }
 }
 
