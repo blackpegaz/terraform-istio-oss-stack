@@ -138,6 +138,7 @@ No modules.
 | <a name="input_cert_manager_namespace"></a> [cert\_manager\_namespace](#input\_cert\_manager\_namespace) | The name of the cert-manager namespace | `string` | `"cert-manager"` | no |
 | <a name="input_cert_manager_overlay_helm_values"></a> [cert\_manager\_overlay\_helm\_values](#input\_cert\_manager\_overlay\_helm\_values) | Any values to pass as an overlay to the cert-manager Helm values | `any` | `{}` | no |
 | <a name="input_cert_manager_version"></a> [cert\_manager\_version](#input\_cert\_manager\_version) | The version of the cert-manager Helm release | `string` | `""` | no |
+| <a name="input_crds_sensitive_fields"></a> [crds\_sensitive\_fields](#input\_crds\_sensitive\_fields) | List of fields (dot-syntax) which are sensitive and should be obfuscated in output. This feature is used here to reduce the size of the output for the CRDs. | `list(any)` | <pre>[<br>  "spec.versions"<br>]</pre> | no |
 | <a name="input_domain"></a> [domain](#input\_domain) | The FQDN used to configure external urls"<br><br>  Example: "example.com" | `string` | n/a | yes |
 | <a name="input_istio_base_crds_version"></a> [istio\_base\_crds\_version](#input\_istio\_base\_crds\_version) | The version of the istio-base CRDs | `string` | `""` | no |
 | <a name="input_istio_base_enabled"></a> [istio\_base\_enabled](#input\_istio\_base\_enabled) | Flag to enable or disable the installation of istio-base components | `bool` | `true` | no |

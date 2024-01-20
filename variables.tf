@@ -29,6 +29,12 @@ variable "prometheus_url" {
   default     = ""
 }
 
+variable "crds_sensitive_fields" {
+  description = "List of fields (dot-syntax) which are sensitive and should be obfuscated in output. This feature is used here to reduce the size of the output for the CRDs."
+  type        = list(any)
+  default     = ["spec.versions"]
+}
+
 #### ISTIO #### 
 variable "istio_enabled" {
   description = "Flag to enable or disable the installation of all istio components"

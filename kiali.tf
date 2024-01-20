@@ -42,6 +42,7 @@ data "kubectl_file_documents" "kiali_operator_crd_crds" {
 
 resource "kubectl_manifest" "kiali_operator_crd_crds" {
   for_each          = { for k, v in data.kubectl_file_documents.kiali_operator_crd_crds.manifests : k => v if local.istio.enabled && var.kiali_operator_enabled }
+  sensitive_fields  = var.crds_sensitive_fields
   yaml_body         = each.value
   wait              = true
   server_side_apply = true
