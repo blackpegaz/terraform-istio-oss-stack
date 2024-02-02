@@ -109,6 +109,10 @@ No modules.
 | [kubectl_manifest.cert_manager_crd_crds](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
 | [kubectl_manifest.istio_ingressgateway_backendconfig](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
 | [kubectl_manifest.istio_ingressgateway_shared_secured_gateway](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
+| [kubectl_manifest.istio_istiod_revisiontags_canary](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
+| [kubectl_manifest.istio_istiod_revisiontags_default](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
+| [kubectl_manifest.istio_istiod_revisiontags_old_stable](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
+| [kubectl_manifest.istio_istiod_revisiontags_stable](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
 | [kubectl_manifest.jaeger_operator_crd_crds](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
 | [kubectl_manifest.jaeger_operator_instance_allinone](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
 | [kubectl_manifest.kiali_operator_crd_crds](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
@@ -118,6 +122,10 @@ No modules.
 | [kubernetes_namespace_v1.jaeger_operator_namespace](https://registry.terraform.io/providers/hashicorp/kubernetes/2.25.2/docs/resources/namespace_v1) | resource |
 | [kubernetes_namespace_v1.kiali_operator_namespace](https://registry.terraform.io/providers/hashicorp/kubernetes/2.25.2/docs/resources/namespace_v1) | resource |
 | [kubernetes_namespace_v1.kube_prometheus_stack_namespace](https://registry.terraform.io/providers/hashicorp/kubernetes/2.25.2/docs/resources/namespace_v1) | resource |
+| [helm_template.istio_istiod_revisiontags_canary](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/data-sources/template) | data source |
+| [helm_template.istio_istiod_revisiontags_default](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/data-sources/template) | data source |
+| [helm_template.istio_istiod_revisiontags_old_stable](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/data-sources/template) | data source |
+| [helm_template.istio_istiod_revisiontags_stable](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/data-sources/template) | data source |
 | [http_http.base_crd_crdallgen](https://registry.terraform.io/providers/hashicorp/http/3.4.1/docs/data-sources/http) | data source |
 | [http_http.base_crd_operator](https://registry.terraform.io/providers/hashicorp/http/3.4.1/docs/data-sources/http) | data source |
 | [http_http.cert_manager_crd_crds](https://registry.terraform.io/providers/hashicorp/http/3.4.1/docs/data-sources/http) | data source |
@@ -126,6 +134,10 @@ No modules.
 | [kubectl_file_documents.base_crd_crdallgen](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/data-sources/file_documents) | data source |
 | [kubectl_file_documents.base_crd_operator](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/data-sources/file_documents) | data source |
 | [kubectl_file_documents.cert_manager_crd_crds](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/data-sources/file_documents) | data source |
+| [kubectl_file_documents.istio_istiod_revisiontags_canary_docs](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/data-sources/file_documents) | data source |
+| [kubectl_file_documents.istio_istiod_revisiontags_default_docs](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/data-sources/file_documents) | data source |
+| [kubectl_file_documents.istio_istiod_revisiontags_old_stable_docs](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/data-sources/file_documents) | data source |
+| [kubectl_file_documents.istio_istiod_revisiontags_stable_docs](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/data-sources/file_documents) | data source |
 | [kubectl_file_documents.jaeger_operator_crd_crds](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/data-sources/file_documents) | data source |
 | [kubectl_file_documents.kiali_operator_crd_crds](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/data-sources/file_documents) | data source |
 

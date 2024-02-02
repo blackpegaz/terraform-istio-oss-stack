@@ -223,6 +223,11 @@ variable "istio_istiod_instance" {
     error_message = "Err: Variable \"is_default_revision\" (boolean) must be set for each Istiod instance."
   }
 
+  validation { #TODO
+    condition     = anytrue([for instance in var.istio_istiod_instance : contains([true], instance.is_default_revision)])
+    error_message = "Err: You should set at least one instance as the \"default revision\"."
+  }
+
   validation {
     condition     = length([for instance in var.istio_istiod_instance : instance]) == 1 ? anytrue([for instance in var.istio_istiod_instance : contains([true], instance.is_default_revision)]) : true
     error_message = "Err: If there's only one istiod instance you should set it as the default revision."
