@@ -287,8 +287,8 @@ variable "istio_ingressgateway_revision_binding" {
   default     = "stable"
 
   validation {
-    condition     = contains(["canary", "stable"], var.istio_ingressgateway_revision_binding)
-    error_message = "[ERR-ISTIO-19] Value for revision_binding should be either \"canary\" or \"stable\"."
+    condition     = contains(["canary", "stable", "old-stable"], var.istio_ingressgateway_revision_binding)
+    error_message = "[ERR-ISTIO-19] Value for revision_binding should be either \"canary\", \"stable\" or \"old-stable\"."
   }
 }
 

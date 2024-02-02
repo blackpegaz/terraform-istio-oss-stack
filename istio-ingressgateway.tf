@@ -1,5 +1,5 @@
 locals {
-  istio_ingressgateway_revision = var.istio_ingressgateway_revision_binding == "stable" ? var.revisiontags_stable : (var.istio_ingressgateway_revision_binding == "canary" ? var.revisiontags_canary : "")
+  istio_ingressgateway_revision = var.istio_ingressgateway_revision_binding == "stable" ? var.revisiontags_stable : (var.istio_ingressgateway_revision_binding == "canary" ? var.revisiontags_canary : var.revisiontags_old_stable)
 
   istio_ingressgateway_default_helm_values = templatefile("${path.module}/templates/istio-ingressgateway/istio-ingressgateway-default-helm-values.yaml.tftpl", {
     jaeger_spec_nodeselector                = jsonencode(var.istio_oss_stack_default_nodeselector),

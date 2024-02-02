@@ -48,7 +48,7 @@ Extra steps :
 
 As for the In-place upgrade method, the `istio-oss-stack` terraform module follows an opiniated logic workflow to automate some tasks and guide the user.
 
-**Important** : Currently the `istio-oss-stack` terraform module does not support to add a canary revision of the `gateway`. The module only allows to point the existing `istio-ingressgateway` to either the `stable` or the `canary` revision. # FIXME old-stable also ?
+**Important** : Currently the `istio-oss-stack` terraform module does not support to add a canary revision of the `gateway`. The module only allows to point the existing `istio-ingressgateway` to either the `stable` or the `canary` revision.
 
  #FIXME 
 
