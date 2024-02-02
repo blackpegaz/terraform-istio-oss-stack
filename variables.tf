@@ -60,7 +60,7 @@ variable "istio_platform" {
       ["", "gcp", "openshift"],
       var.istio_platform
     )
-    error_message = "Err: platform is not valid."
+    error_message = "[ERR-ISTIO-01] Platform is not valid."
   }
   default = ""
 }
@@ -146,7 +146,7 @@ variable "revisiontags_stable" {
   default     = "prod-stable"
   validation {
     condition     = !contains(["default"], lower(var.revisiontags_stable))
-    error_message = "Err: \"default\" tag is a reserved word already and only affected to Stable version."
+    error_message = "[ERR-ISTIO-02] \"default\" tag is a reserved word already and only affected to Stable version."
   }
 }
 
@@ -156,7 +156,7 @@ variable "revisiontags_old_stable" {
   default     = "old-stable"
   validation {
     condition     = !contains(["default"], lower(var.revisiontags_old_stable))
-    error_message = "Err: \"default\" tag is a reserved word which is managed by the module for the Stable revision."
+    error_message = "[ERR-ISTIO-03] \"default\" tag is a reserved word which is managed by the module for the Stable revision."
   }
 }
 
@@ -166,7 +166,7 @@ variable "revisiontags_canary" {
   default     = "prod-canary"
   validation {
     condition     = !contains(["default"], lower(var.revisiontags_canary))
-    error_message = "Err: \"default\" tag is a reserved word which is managed by the module for the Stable revision."
+    error_message = "[ERR-ISTIO-04] \"default\" tag is a reserved word which is managed by the module for the Stable revision."
   }
 }
 
@@ -195,63 +195,63 @@ variable "istio_istiod_instance" {
 
   validation {
     condition     = anytrue([for instance, instance_config in var.istio_istiod_instance : instance_config["revisiontags_binding"] == "stable"])
-    error_message = "Err: You should define at least one stable istiod instance."
+    error_message = "[ERR-ISTIO-05] You should define at least one stable istiod instance."
   }
 
   # The next validation rule should never match due to constraint on revisiontags_binding.
   validation {
     condition = length([
     for instance in var.istio_istiod_instance : instance]) <= 2
-    error_message = "Err: You cannot create more than two istiod instances."
+    error_message = "[ERR-ISTIO-06] You cannot create more than two istiod instances."
   }
 
   validation {
     condition = alltrue([
     for instance in var.istio_istiod_instance : can(regex("^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$", instance.version))])
-    error_message = "Err: Version must be defined and a valid semantic version."
+    error_message = "[ERR-ISTIO-07] Version must be defined and a valid semantic version."
   }
 
   validation {
     condition = alltrue([
     for instance in var.istio_istiod_instance : !can(regex("\\.", instance.revision)) && length(instance.revision) > 0])
-    error_message = "Err: Value for revison must be non null and cannot contain a dot(\".\") character."
+    error_message = "[ERR-ISTIO-08] Value for revison must be non null and cannot contain a dot(\".\") character."
   }
 
   validation {
     condition = alltrue([
     for instance in var.istio_istiod_instance : can(tobool(instance.is_default_revision))])
-    error_message = "Err: Variable \"is_default_revision\" (boolean) must be set for each Istiod instance."
+    error_message = "[ERR-ISTIO-09] Variable \"is_default_revision\" (boolean) must be set for each Istiod instance."
   }
 
-  validation { #TODO
+  validation {
     condition     = anytrue([for instance in var.istio_istiod_instance : contains([true], instance.is_default_revision)])
-    error_message = "Err: You should set at least one instance as the \"default revision\"."
+    error_message = "[ERR-ISTIO-10] You should set at least one instance as the \"default revision\"."
   }
 
   validation {
     condition     = length([for instance in var.istio_istiod_instance : instance]) == 1 ? anytrue([for instance in var.istio_istiod_instance : contains([true], instance.is_default_revision)]) : true
-    error_message = "Err: If there's only one istiod instance you should set it as the default revision."
+    error_message = "[ERR-ISTIO-11] If there's only one istiod instance you should set it as the default revision."
   }
 
   validation {
     condition     = !anytrue([for instance in var.istio_istiod_instance : contains([true], instance.is_default_revision) && contains(["canary", "old-stable"], instance.revisiontags_binding)])
-    error_message = "Err: Only the \"stable revision\" can be the \"default revision\"."
+    error_message = "[ERR-ISTIO-13] Only the \"stable revision\" can be the \"default revision\"."
   }
 
   validation {
     condition = alltrue([
     for instance in var.istio_istiod_instance : contains(["canary", "stable", "old-stable"], instance.revisiontags_binding)])
-    error_message = "Err: Value for revisiontags_binding should be either \"canary\", \"stable\" or \"old-stable\"."
+    error_message = "[ERR-ISTIO-14] Value for revisiontags_binding should be either \"canary\", \"stable\" or \"old-stable\"."
   }
 
   validation {
     condition     = length(distinct([for instance, instance_config in var.istio_istiod_instance : instance_config["revisiontags_binding"]])) == length([for instance in var.istio_istiod_instance : instance])
-    error_message = "Err: You cannot define more than one stable|old-stable|canary istiod instance."
+    error_message = "[ERR-ISTIO-15] You cannot define more than one stable|old-stable|canary istiod instance."
   }
 
   validation {
     condition     = length(distinct([for instance, instance_config in var.istio_istiod_instance : instance_config["revision"]])) == length([for instance in var.istio_istiod_instance : instance])
-    error_message = "Err: You cannot set the same revision for two istiod instances."
+    error_message = "[ERR-ISTIO-16] You cannot set the same revision for two istiod instances."
   }
 
   validation {
@@ -259,7 +259,7 @@ variable "istio_istiod_instance" {
       for instance, instance_config in var.istio_istiod_instance : [
       for k, v in instance_config.helm_values : !can(regex("^(revision|revisionTags)$", k))]
     ]))
-    error_message = "Err: You cannot override \"revision\" and \"revisionTags\" through \"helm_values\". Use \"revision\" and \"revisiontags_binding\" attributes."
+    error_message = "[ERR-ISTIO-17] You cannot override \"revision\" and \"revisionTags\" through \"helm_values\". Use \"revision\" and \"revisiontags_binding\" attributes."
   }
 }
 
@@ -277,7 +277,7 @@ variable "istio_ingressgateway_version" {
 
   validation {
     condition     = can(regex("^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$", var.istio_ingressgateway_version))
-    error_message = "Err: Version must be defined and a valid semantic version."
+    error_message = "[ERR-ISTIO-18] Version must be defined and a valid semantic version."
   }
 }
 
@@ -288,7 +288,7 @@ variable "istio_ingressgateway_revision_binding" {
 
   validation {
     condition     = contains(["canary", "stable"], var.istio_ingressgateway_revision_binding)
-    error_message = "Err: Value for revision_binding should be either \"canary\" or \"stable\"."
+    error_message = "[ERR-ISTIO-19] Value for revision_binding should be either \"canary\" or \"stable\"."
   }
 }
 
@@ -301,7 +301,7 @@ variable "istio_ingressgateway_overlay_helm_values" {
     condition = alltrue(flatten([
       for k, v in var.istio_ingressgateway_overlay_helm_values : !can(regex("^(revision)$", k))]
     ))
-    error_message = "Err: You cannot override \"revision\" through \"helm_values\". Use \"istio_ingressgateway_revision_binding\" variable."
+    error_message = "[ERR-ISTIO-20] You cannot override \"revision\" through \"helm_values\". Use \"istio_ingressgateway_revision_binding\" variable."
   }
 }
 
