@@ -282,7 +282,7 @@ variable "istio_ingressgateway_version" {
 }
 
 variable "istio_ingressgateway_revision_binding" {
-  description = "The binding to either the \"canary\" revisionTag or the \"stable\" revisionTag"
+  description = "The binding to either the \"canary\", \"stable\" or \"old-stable\" revisionTag"
   type        = string
   default     = "stable"
 
