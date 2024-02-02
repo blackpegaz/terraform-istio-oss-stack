@@ -196,81 +196,10 @@ So, here are the steps to evaluate the behavior of the new Istiod version :
 4. Evaluate the behavior of the new Istiod on your app workload. # FIXME
 5. Relabel app workload namespace to prepare a return to normal. # FIXME
 
-### 3 - Dissociate default tag from the future old-stable revision.
-
-Update the `is_default_revision` value to `false` for the stable `istiod_instance`.
-
-Before :
-
-```
-istio_istiod_instance = {
-    "1-19" = {
-      version = "1.19.4"
-      revision = "1-19"
-      is_default_revision = true
-      revisiontags_binding = "stable"
-      helm_values = {}
-    },
-    "1-20" = {
-      version = "1.20.1"
-      revision = "1-20"
-      is_default_revision = false
-      revisiontags_binding = "canary"
-      helm_values = {}
-    },
-  }
-```
-
-After :
-```
-istio_istiod_instance = {
-    "1-19" = {
-      version = "1.19.4"
-      revision = "1-19"
-      is_default_revision = false
-      revisiontags_binding = "stable"
-      helm_values = {}
-    },
-    "1-20" = {
-      version = "1.20.1"
-      revision = "1-20"
-      is_default_revision = false
-      revisiontags_binding = "canary"
-      helm_values = {}
-    },
-  }
-```
-
-After a terraform apply :
-
-```
-istioctl tag list  
-TAG         REVISION NAMESPACES
-prod-canary 1-20     
-prod-stable 1-19     demo
-```
-
-```
- tf console     
-> module.istio-oss-stack
-{
-  "istio" = {
-    "canary_revision" = "1-20"
-    "canary_version" = "1.20.1"
-    "default_revision" = ""
-    "ingressgateway_revision" = "prod-stable"
-    "ingressgateway_version" = "1.19.4"
-    "old_stable_revision" = ""
-    "old_stable_version" = ""
-    "stable_revision" = "1-19"
-    "stable_version" = "1.19.4"
-  }
-}
-```
-
-### 4 - Promote new revision as the **default**, **prod-stable** one.
+### 3 - Promote new revision as the **default**, **prod-stable** one.
 
 For revision `1-19` :
+- Update the `is_default_revision` value to `false`.
 - Update the `revisiontags_binding` value to `old-stable`
 
 For revision `1-20` :
@@ -299,17 +228,6 @@ istio_istiod_instance = {
 ```
 
 After two terraform apply :
-
-Error : 
-```
-module.istio-oss-stack.helm_release.istio_istiod["1-19"]: Modifications complete after 2s [id=istio-istiod-1-19]                                                                                                                                                                     
-│ Error: Unable to continue with update: MutatingWebhookConfiguration "istio-revision-tag-prod-stable" in namespace "" exists and cannot be imported into the current release: invalid ownership metadata; annotation validation error: key "meta.helm.sh/release-name" must equal "istio-istiod-1-20": current value is "istio-istiod-1-19"
-│ 
-│   with module.istio-oss-stack.helm_release.istio_istiod["1-20"],
-│   on .terraform/modules/istio-oss-stack/istio-istiod.tf line 11, in resource "helm_release" "istio_istiod":
-│   11: resource "helm_release" "istio_istiod" {
-```
-
 
 Below results are as expected :
 ```
