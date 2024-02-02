@@ -1,4 +1,4 @@
-# Deploy the istio-oss-stack for the first time.
+# 01 -  Deploy the istio-oss-stack for the first time.
 
 Here is an example of an initial configuration :
 

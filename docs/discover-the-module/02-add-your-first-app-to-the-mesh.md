@@ -1,4 +1,4 @@
-# Add you first application to the mesh.
+# 02 - Add you first application to the mesh.
 
 Here I use the example of the [Bookinfo application](https://istio.io/latest/docs/examples/bookinfo/) provided by the Istio project : 
 

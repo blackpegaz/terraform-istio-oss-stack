@@ -1,4 +1,4 @@
-# Do an Istio In-place upgrade.
+# 03 - Do an Istio In-place upgrade.
 
 Here we expect to use the `In-place` upgrade method to upgrade an existing Istio control plane to a new `patch` version.
 

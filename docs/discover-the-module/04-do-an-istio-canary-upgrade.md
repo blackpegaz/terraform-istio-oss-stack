@@ -1,4 +1,4 @@
-# Do an Istio Canary upgrade.
+# 04 - Do an Istio Canary upgrade.
 
 Here we use the `Canary` upgrade method to install another Istio control plane version. We will be able to validate its compatibility with our actual setup/workload before replacing the existing version.
 
@@ -63,9 +63,15 @@ As for the In-place upgrade method, the `istio-oss-stack` terraform module follo
 
 ## Instructions
 
-### 1. Add a canary `istiod_instance`
+| Supported matrix for istiod_instance | |   |     |
+| --------   | --- | --- | --- |
+| stable     | 1   | 1   | 1   |
+| canary     | 0   | 1   | 0   |
+| old-stable | 0   | 0   | 1   |
 
-Here, we use the `istio_istiod_instance` variable to add new istiod_instance. A canary one.
+### 1. Add a `canary` istiod_instance
+
+Here, we use the `istio_istiod_instance` variable to add new istiod_instance. A `canary` one.
 
 **Important** : `canary` version must be higher than the `stable` version.
 
@@ -182,7 +188,7 @@ So, here are the steps to evaluate the behavior of the new Istiod version :
     Example : 
     
     ```
-    istioctl200 proxy-status -n demo
+    istioctl proxy-status -n demo
 
     NAME                                     CLUSTER        CDS        LDS        EDS        RDS        ECDS         ISTIOD                           VERSION
     details-v1-7bd85cccdd-ghc6d.demo         Kubernetes     SYNCED     SYNCED     SYNCED     SYNCED     NOT SENT     istiod-1-19-c88d4d9bd-kx5h4      1.19.4
@@ -193,10 +199,83 @@ So, here are the steps to evaluate the behavior of the new Istiod version :
     reviews-v3-75fd4558c7-ksfxt.demo         Kubernetes     SYNCED     SYNCED     SYNCED     SYNCED     NOT SENT     istiod-1-20-7497b85cdf-nff8b     1.20.1
     ```
    
-4. Evaluate the behavior of the new Istiod on your app workload. # FIXME
-5. Relabel app workload namespace to prepare a return to normal. # FIXME
+4. Evaluate the impact of the new Istiod instance on your `app workload`. # FIXME
+5. Relabel `app workload namespace` to `istio.io/rev: prod-stable`. # FIXME
 
-### 3 - Promote new revision as the **default**, **prod-stable** one.
+Info : A rollout is not expected here as the `prod-stable` tag will be bound to the new revision in step 4.
+
+### 3 - Upgrade the `istio-ingressgateway`
+
+1. Upgrade the `gateway` chart version : 
+
+    Before : 
+    ```
+    istio_ingressgateway_enabled = true
+    istio_ingressgateway_version = "1.19.4"
+    istio_ingressgateway_revision_binding = "stable"
+    istio_ingressgateway_overlay_helm_values = {}
+    ```
+
+    After :
+    ``` 
+    istio_ingressgateway_enabled = true
+    istio_ingressgateway_version = "1.20.1"
+    istio_ingressgateway_revision_binding = "stable"
+    istio_ingressgateway_overlay_helm_values = {}
+    ```
+    
+2. Apply the change with a `terraform apply`
+
+    After : 
+
+    ```
+    helm list -n istio-ingress
+     
+    istio-ingressgateway    istio-ingress   3               2024-01-22 16:35:38.442516623 +0100 CET deployed        gateway-1.20.1                  1.20.1
+    ```
+
+3. Configure the `istio_ingressgateway_revision_binding` variable to point to the `canary` revision.
+
+    Before : 
+    ```
+    istio_ingressgateway_enabled = true
+    istio_ingressgateway_version = "1.20.1"
+    istio_ingressgateway_revision_binding = "stable"
+    istio_ingressgateway_overlay_helm_values = {}
+    ```
+
+    After :
+    ``` 
+    istio_ingressgateway_enabled = true
+    istio_ingressgateway_version = "1.20.1"
+    istio_ingressgateway_revision_binding = "canary"
+    istio_ingressgateway_overlay_helm_values = {}
+    ```
+
+4. Do a rollout of the `istio-ingress/istio-ingressgateway` deployment.
+5. Use the command `istioctl proxy-status` to verify that the proxy version used by the pods of the `istio-ingress/istio-ingressgateway` deployment is the one which is linked to the `prod-canary` Revision tag.
+6. Evaluate the impact of the new Istiod `canary` instance on the `istio-ingressgateway`. # FIXME
+7. Reconfigure the `istio_ingressgateway_revision_binding` variable to point to the `stable` revision.
+
+    Before : 
+    ```
+    istio_ingressgateway_enabled = true
+    istio_ingressgateway_version = "1.20.1"
+    istio_ingressgateway_revision_binding = "canary"
+    istio_ingressgateway_overlay_helm_values = {}
+    ```
+
+    After :
+    ``` 
+    istio_ingressgateway_enabled = true
+    istio_ingressgateway_version = "1.20.1"
+    istio_ingressgateway_revision_binding = "stable"
+    istio_ingressgateway_overlay_helm_values = {}
+    ```
+
+Info : A rollout is not expected here as the `prod-stable` tag will be bound to the new revision in step 4.
+
+### 4 - Promote new revision as the **default**, **prod-stable** one.
 
 For revision `1-19` :
 - Update the `is_default_revision` value to `false`.
@@ -227,14 +306,14 @@ istio_istiod_instance = {
   }
 ```
 
-After two terraform apply :
+After a terraform apply :
 
 Below results are as expected :
 ```
 helm list --all-namespaces | grep istio
 istio-base              istio-system    3               2024-01-24 18:39:12.165734323 +0100 CET deployed        base-1.20.1                     1.20.1     
 istio-cni               kube-system     3               2024-01-24 18:39:14.461434206 +0100 CET deployed        cni-1.20.1                      1.20.1     
-istio-ingressgateway    istio-ingress   2               2024-01-21 11:27:03.912508337 +0100 CET deployed        gateway-1.19.4                  1.19.4     
+istio-ingressgateway    istio-ingress   3               2024-01-22 16:35:38.442516623 +0100 CET deployed        gateway-1.20.1                  1.20.1     
 istio-istiod-1-19       istio-system    4               2024-01-24 18:39:17.367031482 +0100 CET deployed        istiod-1.19.4                   1.19.4     
 istio-istiod-1-20       istio-system    2               2024-01-24 18:57:28.233316698 +0100 CET deployed        istiod-1.20.1                   1.20.1 
 ```
@@ -256,11 +335,27 @@ terraform console
     "canary_version" = ""
     "default_revision" = "1-20"
     "ingressgateway_revision" = "prod-stable"
-    "ingressgateway_version" = "1.19.4"
+    "ingressgateway_version" = "1.20.1"
     "old_stable_revision" = "1-19"
     "old_stable_version" = "1.19.4"
     "stable_revision" = "1-20"
     "stable_version" = "1.20.1"
   }
 }
+```
+
+Example : 
+    
+```
+istioctl proxy-status
+
+NAME                                                    CLUSTER        CDS        LDS        EDS        RDS        ECDS         ISTIOD                           VERSION
+details-v1-7bd85cccdd-ghc6d.demo                        Kubernetes     SYNCED     SYNCED     SYNCED     SYNCED     NOT SENT     istiod-1-19-c88d4d9bd-kx5h4      1.19.4
+productpage-v1-5bbbf86cb7-xskw9.demo                    Kubernetes     SYNCED     SYNCED     SYNCED     SYNCED     NOT SENT     istiod-1-19-c88d4d9bd-mhcl4      1.19.4
+ratings-v1-5947d5c67c-snv2d.demo                        Kubernetes     SYNCED     SYNCED     SYNCED     SYNCED     NOT SENT     istiod-1-19-c88d4d9bd-mhcl4      1.19.4
+reviews-v1-849f4b444b-xdp6g.demo                        Kubernetes     SYNCED     SYNCED     SYNCED     SYNCED     NOT SENT     istiod-1-19-c88d4d9bd-kx5h4      1.19.4
+reviews-v2-7f6d6b9fcb-q868n.demo                        Kubernetes     SYNCED     SYNCED     SYNCED     SYNCED     NOT SENT     istiod-1-20-7497b85cdf-nff8b     1.20.1
+reviews-v3-75fd4558c7-ksfxt.demo                        Kubernetes     SYNCED     SYNCED     SYNCED     SYNCED     NOT SENT     istiod-1-20-7497b85cdf-nff8b     1.20.1
+istio-ingressgateway-74767548cc-8tfgg.istio-ingress     Kubernetes     SYNCED     SYNCED     SYNCED     NOT SENT   NOT SENT     istiod-1-20-7497b85cdf-rmtks     1.20.1
+istio-ingressgateway-74767548cc-vrsml.istio-ingress     Kubernetes     SYNCED     SYNCED     SYNCED     NOT SENT   NOT SENT     istiod-1-20-7497b85cdf-rmtks     1.20.1
 ```
