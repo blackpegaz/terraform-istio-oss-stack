@@ -34,6 +34,7 @@ data "kubectl_file_documents" "jaeger_operator_crd_crds" {
 
 resource "kubectl_manifest" "jaeger_operator_crd_crds" {
   for_each          = { for k, v in data.kubectl_file_documents.jaeger_operator_crd_crds.manifests : k => v if local.istio.enabled && var.jaeger_operator_enabled }
+  sensitive_fields  = var.crds_sensitive_fields
   yaml_body         = each.value
   wait              = true
   server_side_apply = true
@@ -73,6 +74,7 @@ resource "kubectl_manifest" "jaeger_operator_instance_allinone" {
     name                        = "jaeger",
     namespace                   = var.jaeger_operator_namespace,
     spec_allinone_image_version = var.jaeger_operator_instance_allinone_image_version
+    affinity                    = jsonencode(var.jaeger_operator_instance_allinone_affinity)
   })
 
   depends_on = [

@@ -3,7 +3,7 @@ locals {
     cnibindir = var.istio_platform == "gcp" ? "/home/kubernetes/bin" : ""
   })
 
-  cni_version = var.istio_cni_version != "" ? var.istio_cni_version : var.istio_base_version
+  cni_version = var.istio_cni_version != "" ? var.istio_cni_version : local.istio.stable_version
 }
 
 resource "helm_release" "istio_cni" {

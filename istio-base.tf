@@ -1,11 +1,14 @@
 locals {
-  base_url_crd_crdallgen = "https://raw.githubusercontent.com/istio/istio/${var.istio_base_crds_version}/manifests/charts/base/crds/crd-all.gen.yaml"
-  base_url_crd_operator  = "https://raw.githubusercontent.com/istio/istio/${var.istio_base_crds_version}/manifests/charts/base/crds/crd-operator.yaml"
+  base_crds_version      = var.istio_base_crds_version != "" ? var.istio_base_crds_version : coalesce(local.istio.canary_version, local.istio.stable_version)
+  base_url_crd_crdallgen = "https://raw.githubusercontent.com/istio/istio/${local.base_crds_version}/manifests/charts/base/crds/crd-all.gen.yaml"
+  base_url_crd_operator  = "https://raw.githubusercontent.com/istio/istio/${local.base_crds_version}/manifests/charts/base/crds/crd-operator.yaml"
 
   base_default_helm_values = templatefile("${path.module}/templates/istio-mesh/base-default-helm-values.yaml.tftpl", {
-    defaultrevision = var.istio_stable_revision,
+    defaultrevision = local.istio.stable_revision,
     platform        = var.istio_platform
   })
+
+  base_version = var.istio_base_version != "" ? var.istio_base_version : local.istio.stable_version
 }
 
 resource "kubernetes_namespace_v1" "istio_base_namespace" {
@@ -38,6 +41,7 @@ data "kubectl_file_documents" "base_crd_crdallgen" {
 
 resource "kubectl_manifest" "base_crd_crdallgen" {
   for_each          = { for k, v in data.kubectl_file_documents.base_crd_crdallgen.manifests : k => v if var.istio_enabled }
+  sensitive_fields  = var.crds_sensitive_fields
   yaml_body         = each.value
   wait              = true
   server_side_apply = true
@@ -64,6 +68,7 @@ data "kubectl_file_documents" "base_crd_operator" {
 
 resource "kubectl_manifest" "base_crd_operator" {
   for_each          = { for k, v in data.kubectl_file_documents.base_crd_operator.manifests : k => v if var.istio_enabled }
+  sensitive_fields  = var.crds_sensitive_fields
   yaml_body         = each.value
   wait              = true
   server_side_apply = true
@@ -79,7 +84,7 @@ resource "helm_release" "istio_base" {
   name             = "istio-base"
   repository       = local.istio.helm_repo
   chart            = "base"
-  version          = var.istio_base_version
+  version          = local.base_version
   create_namespace = false
   namespace        = var.istio_base_namespace
   skip_crds        = true

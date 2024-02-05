@@ -1,7 +1,10 @@
 locals {
+  istio_ingressgateway_revision = var.istio_ingressgateway_revision_binding == "stable" ? var.revisiontags_stable : (var.istio_ingressgateway_revision_binding == "canary" ? var.revisiontags_canary : var.revisiontags_old_stable)
+
   istio_ingressgateway_default_helm_values = templatefile("${path.module}/templates/istio-ingressgateway/istio-ingressgateway-default-helm-values.yaml.tftpl", {
     jaeger_spec_nodeselector                = jsonencode(var.istio_oss_stack_default_nodeselector),
     nodeselector                            = jsonencode(var.istio_oss_stack_default_nodeselector),
+    revision                                = local.istio_ingressgateway_revision
     istio_ingressgateway_backendconfig_name = var.istio_ingressgateway_backendconfig_name # This is not the YAML path
   })
 }
@@ -24,7 +27,7 @@ resource "kubernetes_namespace_v1" "istio_ingressgateway_namespace" {
 }
 
 resource "kubectl_manifest" "istio_ingressgateway_backendconfig" {
-  count = local.istio.enabled && var.istio_ingressgateway_enabled ? 1 : 0
+  count = local.istio.enabled && var.istio_platform == "gcp" && var.istio_ingressgateway_enabled ? 1 : 0
   yaml_body = templatefile("${path.module}/templates/istio-ingressgateway/istio-ingressgateway-backendconfig.yaml.tftpl", {
     name      = var.istio_ingressgateway_backendconfig_name,
     namespace = var.istio_ingressgateway_namespace
@@ -49,6 +52,13 @@ resource "helm_release" "istio_ingressgateway" {
     local.istio_ingressgateway_default_helm_values,
     yamlencode(var.istio_ingressgateway_overlay_helm_values)
   ]
+
+  lifecycle {
+    precondition {
+      condition     = anytrue([for instance in var.istio_istiod_instance : contains([var.istio_ingressgateway_revision_binding], instance.revisiontags_binding)])
+      error_message = "[ERR-ISTIO-21] The \"istio_ingressgateway_revision_binding\" variable does not bind an existing Istiod instance."
+    }
+  }
 
   depends_on = [
     helm_release.istio_istiod,

@@ -8,17 +8,19 @@ locals {
 }
 
 resource "helm_release" "istio_istiod" {
-  for_each = { for k, v in var.istio_istiod_instance : k => v if var.istio_enabled && var.istio_istiod_enabled }
+  for_each = { for instance, instance_config in var.istio_istiod_instance : instance => instance_config if var.istio_enabled && var.istio_istiod_enabled }
 
-  name       = "istio-istiod-${each.key}"
-  repository = local.istio.helm_repo
-  chart      = "istiod"
-  version    = each.value.version
-  namespace  = var.istio_istiod_namespace
+  name             = "istio-istiod-${each.value.revision}"
+  repository       = local.istio.helm_repo
+  chart            = "istiod"
+  version          = each.value.version
+  create_namespace = false
+  namespace        = var.istio_istiod_namespace
 
   values = [
     local.istiod_default_helm_values,
     yamlencode(var.istio_istiod_overlay_helm_values),
+    yamlencode({ "revision" : each.value.revision }),
     yamlencode(each.value.helm_values)
   ]
 

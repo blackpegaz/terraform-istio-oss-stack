@@ -15,15 +15,7 @@ spec:
     limits:
       memory: "128Mi"
       cpu: "500m"
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: cloud.google.com/gke-nodepool # FIXME
-            operator: In
-            values:
-            - outils # FIXME
+  affinity: ${affinity}
   ingress:
     enabled: false
   storage:
